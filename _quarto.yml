@@ -3,12 +3,14 @@ project:
   output-dir: docs
 
 website:
-  title: "Final"
+  title: "PM 566 - Final Project"
+  page-navigation: true
   navbar:
     left:
       - href: index.qmd
-        text: Home
-      - about.qmd
+        text: "Home"
+      - href: about.qmd
+        text: "About"
 
 format:
   html:
