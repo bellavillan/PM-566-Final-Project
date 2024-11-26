@@ -9,4 +9,80 @@ This is the website I will be using for my PM 566 Final Project.
 
 This website is being used for Lab 12 and setting up for my final project
 
-[Written Report](Written Report.Rmd)
+[Download the report](docs/Bella's%20Final.pdf)
+
+## Data Visualizations
+
+The plots display the mean drug poisoning death rates across different U.S. regions (Northeast, South, Midwest, and West) from 1999 to 2016, with each region represented by a distinct color. The national death rate is shown as a red line to highlight the overall trend alongside regional variations.
+
+```{r setup and data, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(readr)
+drug_mortality <- read_csv("~/Downloads/NCHS_-_Drug_Poisoning_Mortality_by_State__United_States_20241018.csv", show_col_types = FALSE)
+```
+
+```{r states categories, include=FALSE}
+library(dplyr)
+
+# Define the regions into categories
+northeast <- c('Connecticut', 'Maine', 'Massachusetts', 'New Hampshire', 'New Jersey', 'New York', 'Pennsylvania', 'Rhode Island', 'Vermont')
+south <- c('Alabama', 'Arkansas', 'Delaware', 'Florida', 'Georgia', 'Kentucky', 'Louisiana', 'Maryland', 'Mississippi', 'North Carolina', 'Oklahoma', 'South Carolina', 'Tennessee', 'Texas', 'Virginia', 'West Virginia', 'District of Columbia')  # Added D.C.to South region
+midwest <- c('Illinois', 'Indiana', 'Iowa', 'Kansas', 'Michigan', 'Minnesota', 'Missouri', 'Nebraska', 'North Dakota', 'Ohio', 'South Dakota', 'Wisconsin')
+west <- c('Alaska', 'Arizona', 'California', 'Colorado', 'Hawaii', 'Idaho', 'Montana', 'Nevada', 'New Mexico', 'Oregon', 'Utah', 'Washington', 'Wyoming')
+
+# Categorize states into regions
+drug_mortality <- drug_mortality %>%
+  mutate(Region = case_when(
+    State %in% northeast ~ "Northeast",
+    State %in% south ~ "South",
+    State %in% midwest ~ "Midwest",
+    State %in% west ~ "West",
+    State == "United States" ~ "National",  # Handle "United States" separately
+    TRUE ~ "Unknown"
+  ))
+
+# Convert Region to a factor (categorical variable)
+drug_mortality$Region <- factor(drug_mortality$Region, levels = c("Northeast", "South", "Midwest", "West", "National"))
+```
+```{r faceted plot, echo=FALSE}
+# Calculate national mean death rate by year using 'US Crude Rate'
+national_death_rate <- drug_mortality %>%
+  group_by(Year) %>%
+  summarize(mean_death_rate = mean(`US Crude Rate`, na.rm = TRUE), .groups = 'drop')
+
+# Group by Year and Region, calculate the mean death rate by region
+mean_death_rate_by_region <- drug_mortality %>%
+  group_by(Year, Region) %>%
+  summarize(mean_death_rate = mean(`Crude Death Rate`, na.rm = TRUE), .groups = 'drop')
+
+# Combine national and regional data
+mean_death_rate_combined <- bind_rows(
+  mean_death_rate_by_region %>% mutate(Source = "Region"),
+  national_death_rate %>% mutate(Source = "National", Region = "National")  # Label National data as a region
+)
+
+# Plot the combined data with faceting
+suppressWarnings(suppressMessages(library(ggplot2)))
+ggplot(mean_death_rate_combined, aes(x = Year, y = mean_death_rate, color = Source, linetype = Source)) +
+  geom_line() +
+  labs(title = "Mean Drug Poisoning Death Rate by Region versus National (1999-2016)",
+       x = "Year", y = "Mean Death Rate (Deaths per 100,000)") +
+  theme_minimal() +
+  facet_wrap(~ Region) +  # Facet by Region and include a separate panel for National
+  scale_color_manual(values = c("Region" = "blue", "National" = "red"))  # Customize colors for the lines
+```
+
+```{r plot 2- all, echo=FALSE}
+# Assign colors to each region and red to National
+region_colors <- c("Northeast" = "deepskyblue", "South" = "chartreuse3", "Midwest" = "darkorchid3", "West" = "orange", "National" = "red")
+
+# Plot the combined data with different colors for regions and red for the national line
+suppressWarnings(suppressMessages(library(ggplot2)))
+ggplot(mean_death_rate_combined, aes(x = Year, y = mean_death_rate, color = Region)) +
+  geom_line(data = subset(mean_death_rate_combined, Source == "National"), linewidth = 1.5, color = "red") +  # Red National line
+  geom_line(data = subset(mean_death_rate_combined, Source == "Region"), alpha = 0.7) +  # Regional lines with transparency
+  labs(title = "Mean Drug Poisoning Death Rate by Region and National (1999-2016)",
+       x = "Year", y = "Mean Death Rate (Deaths per 100,000)") +
+  theme_minimal() +
+  scale_color_manual(values = region_colors)
+```
