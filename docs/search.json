@@ -11,7 +11,7 @@
     "href": "index.html",
     "title": "PM 566 - Final Project",
     "section": "",
-    "text": "This is the website I will be using for my PM 566 Final Project.\nThis website is being used for Lab 12 and setting up for my final project\nDownload the report"
+    "text": "Description\nThe dataset “Drug Overdose Death Rates by Drug Type, Sex, Age, Race and Hispanic Origin in the United States (1999-2016)” from the CDC includes 2,862 observations across 19 variables, such as crude and age-adjusted death rates, demographic factors, and state-level data. This dataset is essential for analyzing trends in drug poisoning mortality across U.S. regions, comparing regional death rates with the national average, and exploring how factors like race, sex, and age have influenced the opioid epidemic over time.mortality.\nDownload the report\n\n\nData Visualizations\nThe plots display the mean drug poisoning death rates across different U.S. regions (Northeast, South, Midwest, and West) from 1999 to 2016, with each region represented by a distinct color. The national death rate is shown as a red line to highlight the overall trend alongside regional variations."
   },
   {
     "objectID": "Written Report.html",
