@@ -1,0 +1,247 @@
+---
+title: "Written Report: Data Analysis of Drug Poisoning Mortality in the United States (NCHS, CDC)"
+author: Isabella Villanueva 
+output: html
+embed-resources: true
+theme: flatly
+---
+
+## Introduction
+
+In 2017, the opioid crisis was declared a matter of “national public health emergency” from the White House. But the American opioid crisis has been a major public health issue long before 2017. Marked by a significant rise in drug poisoning deaths over the past few decades, this epidemic began in the late 1990s when pharmaceutical companies reassured healthcare providers that opioid pain relievers were not highly addictive, leading to widespread over-prescriptions to treat those in pain. Because of the misinformation about the addictive nature of these prescription opioids, such as OxyContin and Vicodin, as well as their increased availability, misuse was inevitable. Over time, patients who became addicted to prescription opioids often transitioned to cheaper, more accessible alternatives like heroin and synthetic opioids such as fentanyl.
+
+By the 2010s, the crisis had escalated. The Centers for Disease Control and Prevention (CDC, 2024) identified **three distinct waves** of opioid-related deaths:
+
+1.  *1999–2010* — Marks the **genesis** of the opioid crisis with rising deaths from **prescription opioids**
+2.  *2010–2013* — A **surge in heroin use** and overdose deaths as access to prescription opioids became restricted
+3.  *2013–present* — The rapid rise of deaths due to **illicitly manufactured fentanyl** (synthetic opioid overdose), which is far more potent than heroin or prescription opioids. Yet, fentanyl is exponentially more dangerous because of its intense potency in small quantities – making it lethal.
+
+National public health agencies, like the CDC, are able to report the numbers of deaths in the United States because of the death certificate reporting process, which involves the use of International Classification of Diseases, Tenth Revision (ICD–10) codes. “Drug-poisoning deaths are defined as having ICD–10 underlying cause-of-death codes X40–X44 (unintentional), X60–X64 (suicide), X85 (homicide), or Y10–Y14 (undetermined intent)” (CDC). According to National Library of Medicine article “Defining indicators for drug overdose emergency department visits and hospitalisations in ICD-10-CM coded discharge data”, the diagnosis code being used for drug poisoning cases would begin with the letter T, “drug poisoning T-codes” indicate “poisoning by unspecified drugs, medicaments and biological substances, accidental (unintentional), initial encounter” (Vivolo-Kantor et al., 2021).
+
+The dataset I have chosen: **“Drug Overdose Death Rates by Drug Type, Sex, Age, Race and Hispanic Origin in the United States (1999 – 2016)”**, reports from the beginning of the opioid crisis until a year before it had been declared a "national health emergency". In this dataset, the CDC reports 2862 observations (rows) of 19 variables (columns), such as crude and age-adjusted death rates related to drug poisoning, the states reporting these deaths, and the demographic data from each individual – involving salient identity factors like race and Hispanic origin, sex, and age. These variables will be vital to exploring which US region has seen the largest influx of drug poisoning mortality rates in comparison to the US crude rate of drug poisoning mortality.
+
+### Research Question of Interest:
+
+-   Over time (1999-2016) and in consideration of all ages and all origins, which regions of the United States have had the greatest increase of drug poisoning death rates?
+
+## Methods
+
+#### How and Where the Data Were Acquired
+
+This public dataset was created by the National Center for Health Statistics (NCHS) in December 2017, and is available on the CDC Data website. Among the NCHS content on this database, a plethora of drug poisoning mortality datasets and visualization tools are available to assess the opioid crisis under different lenses. For this dataset, multiple variables of interest were included like sex, age, race and Hispanic origin, and region. This made this specific dataset the most attractive because of its amount of information available. This dataset was exported from the [CDC website](https://data.cdc.gov/NCHS/NCHS-Drug-Poisoning-Mortality-by-State-United-Stat/xbxb-epbu/about_data) as a CSV file, which was then loaded below.
+
+### Loading the Dataset
+
+```{r}
+library(readr)
+drug_mortality <- read_csv("~/Downloads/NCHS_-_Drug_Poisoning_Mortality_by_State__United_States_20241018.csv", show_col_types = FALSE)
+```
+
+### Cleaning the Data
+
+#### Understanding the NA Values
+
+In cleaning the dataset, checking for NA values is an important step. Using the function: `colSums(is.na(drug_mortality))`, there is an equal amount of NA values (1728) across the variables named:
+
+-   "Age-adjusted Rate",
+
+-   "Standard Error for Age-adjusted Rate",
+
+-   "Lower Confidence Limit for Age-adjusted Rate", and
+
+-   "Upper Confidence Limit for Age-adjusted Rate".
+
+The age-adjusted rates are missing for many entries, and the decision to filter them out or use an alternative rate (like crude rates) must be made.
+
+When assessing the dataset, the NA values only occur when matched with the national data (State variable value = “United States”) as well as the Age Group variable is an age range rather than “All Ages”. This equal amount of NA values is due to how age-adjusted rates cannot be calculated without the known weight of each age group within a population each year.
+
+Because all of the NA values are related to the age-adjusted rates, this is not an issue for using the data. Deleting the data with NA values would be a mistake as it augments our understanding of the true data, and imputing the data to be the mode or mean of similar characteristics is not possible because it would not be accurate to what the variables measure.
+
+Crude death rates will be used instead when considering specific age ranges and when considering the national data, the variable “US Crude Rate” will be used.
+
+#### Removing Irrelevant Variables
+
+Next in cleaning the data, I opted to remove two columns (variables) because they were not relevant to the data being analyzed. The variables “Unit” and “State Crude Rate in Range” will not be necessary in this project because of our intended research question and scope of our data analysis. The original dataset’s Unit variable had two values of “Deaths per 100,000 resident population, **age-adjusted**” or “Deaths per 100,000 resident population, **crude**”. The “Unit” variable does not fill any gaps of information that another variable cannot inform, and removing this variable is not a loss in the greater scope of the data. The State Crude Rate in Range is not relevant to the question of interest as we are considering regions in the United States instead of individual states as well as the comparison to the US Crude Rate, the State Crude Rate in Range variable is also repetitive and contains excess information.
+
+```{r}
+suppressWarnings(suppressMessages(library(dplyr)))
+drug_mortality <- drug_mortality |>
+  select(-c("Unit", "State Crude Rate in Range")) # Removal of irrelevant columns to focus on important data
+```
+
+### Wrangling the Data
+
+After cleaning the data and using the function: `str(drug_mortality[sapply(drug_mortality, is.character)])`, 6 variables were loaded in as `chr` (character or text) variables:
+
+-   State, Sex, Age Group, Race and Hispanic Origin.
+
+-   Variables: State Crude Rate in Range and Unit have been removed
+
+Using the function: `str(drug_mortality[sapply(drug_mortality, is.double)])`, 13 variables were loaded in as `dbl` (double or numeric with decimal) variables:
+
+-   Year, Deaths, Population, Crude Death Rate, Standard Error for Crude Rate, Lower Confidence Limit for Crude Rate, Upper Confidence Limit for Crude Rate, Age-adjusted Rate, Standard Error for Age-adjusted Rate, Lower Confidence Limit for Age-adjusted Rate, Upper Confidence Limit for Age-adjusted Rate, US Crude Rate, and US Age-adjusted Rate
+
+Seeing that the Sex, Race and Hispanic Origin, and Age Group variables are character or text variables and have repeat values, I decided to create these variables as factors where repeated values are then organized into categories (i.e. Sex has “Both Sexes”, “Female”, and “Male”). This will make calling on these variables in the future easier, like in the instance of drug mortality rates being compared between the male and female sexes.
+
+Using the function: `str(drug_mortality)` , I was able to authenticate the conversion of variables to categorical variables where the variables' values were listed by each unique value (i.e. Sex should only have 3 values if the conversion was successful).
+
+```{r}
+drug_mortality$Sex <- as.factor(drug_mortality$Sex)
+drug_mortality$`Race and Hispanic Origin` <- as.factor(drug_mortality$`Race and Hispanic Origin`)
+drug_mortality$`Age Group` <- as.factor(drug_mortality$`Age Group`)
+```
+
+#### Creating a "Hispanic" Categorical Variable
+
+In the case of the variable “Race and Hispanic Origin” (RHO), values like All Races - All Origins, Non-Hispanic Black, Non-Hispanic White, and Hispanic were all present in this column. To address the excess wording need to understand this variable, I used the package `dplyr` as a tool for data exploration and opted to create a new categorical variable (new column) named "Hispanic". In this new variable, I assigned values whether the individual is of Hispanic origin or not. When the RHO column indicated only the word “Hispanic” the value would be 1, while the value would be 0 if the RHO column indicated “Non-Hispanic” along with their race, or if it indicated “All Races - All Origins”.
+
+```{r}
+library(dplyr)
+drug_mortality <- drug_mortality %>%
+  mutate(Hispanic = ifelse(grepl("Non-Hispanic", `Race and Hispanic Origin`), 0,
+                           ifelse(grepl("Hispanic", `Race and Hispanic Origin`), 1, NA))) # NA values account for the "All Races - All Origins" values in the `Race and Hispanic Origin` variable.
+```
+
+#### Representative States for US Regions
+
+Because all 50 states would be too much information to assess in order to form a conclusion, I have chosen 5 states to represent the regions of the United States. The United States is often divided into four main regions: Northeast, Midwest, South, West and Central. I added Colorado as a representation for the Central region to account for the vastness of the United States.
+
+-   Northeast: New York
+-   Midwest: Illinois
+-   South: Texas
+-   West: California
+-   Central: Colorado
+
+This condenses the original data set of 2862 observations down to 90 observations, which should be easier to handle in preliminary data analysis.
+
+```{r}
+selected_states <- c("New York", "Illinois", "Texas", "California", "Colorado")
+
+filtered_drug_mortality <- drug_mortality %>%
+  filter(State %in% selected_states)
+```
+
+Additionally, since our research question of interest asks what regions have had the greatest increase in drug poisoning mortality, I also opted to divide all 50 states (and the District of Columbia) into their respective US regions of Northeast, South, Midwest, and West according to [how the CDC defines the geographic regions in the United States](https://www.cdc.gov/nchs/hus/sources-definitions/geographic-region.htm).
+
+The previous use of the representative 5 states for the US regions is helpful to guide our hypotheses on which regions are expected to have higher drug poisoning mortality rates, but to get a more specific visualization of the data, use of all 50 states (and including Washington D.C.) is necessary.
+
+In the State variable, 'United States' is included as a value, indicating that those rows represent national data, which lends to the US Crude Rate variable. This will be useful when comparing the regions to the national rates. Using the function: `head(drug_mortality[, c("State", "Region")])`, I was able to authenticate the Region categorical variable has been created and is accurate.
+
+```{r}
+library(dplyr)
+
+# Define the regions as vectors
+northeast <- c('Connecticut', 'Maine', 'Massachusetts', 'New Hampshire', 'New Jersey', 'New York', 'Pennsylvania', 'Rhode Island', 'Vermont')
+south <- c('Alabama', 'Arkansas', 'Delaware', 'Florida', 'Georgia', 'Kentucky', 'Louisiana', 'Maryland', 'Mississippi', 'North Carolina', 'Oklahoma', 'South Carolina', 'Tennessee', 'Texas', 'Virginia', 'West Virginia', 'District of Columbia')  # Added D.C.to South region
+midwest <- c('Illinois', 'Indiana', 'Iowa', 'Kansas', 'Michigan', 'Minnesota', 'Missouri', 'Nebraska', 'North Dakota', 'Ohio', 'South Dakota', 'Wisconsin')
+west <- c('Alaska', 'Arizona', 'California', 'Colorado', 'Hawaii', 'Idaho', 'Montana', 'Nevada', 'New Mexico', 'Oregon', 'Utah', 'Washington', 'Wyoming')
+
+# Categorize states into regions
+drug_mortality <- drug_mortality %>%
+  mutate(Region = case_when(
+    State %in% northeast ~ "Northeast",
+    State %in% south ~ "South",
+    State %in% midwest ~ "Midwest",
+    State %in% west ~ "West",
+    State == "United States" ~ "National",  # Handle "United States" separately
+    TRUE ~ "Unknown"  # For any unexpected or undefined states
+  ))
+
+# Convert Region to a factor (categorical variable)
+drug_mortality$Region <- factor(drug_mortality$Region, levels = c("Northeast", "South", "Midwest", "West", "National"))
+```
+
+## Preliminary Results
+
+### Average Death Rates Due to Drug Poisoning by State and Year
+
+```{r}
+suppressWarnings(suppressMessages(library(dplyr)))
+library(knitr)
+
+drug_mortality$`Crude Death Rate` <- as.numeric(drug_mortality$`Crude Death Rate`)
+
+summary_table_meandeath <- filtered_drug_mortality %>%
+  group_by(State, Year) %>%
+summarize(
+    Mean_Death_Rate = mean(`Crude Death Rate`, na.rm = TRUE), .groups = 'drop') 
+
+kable(summary_table_meandeath, caption = "Mean Drug Poisoning Crude Death Rate by State and Year")
+```
+
+### Average Drug Poisoning Death Rate by Representative State (5 Selected)
+
+```{r}
+library(dplyr)
+suppressWarnings(suppressMessages(library(ggplot2)))
+ggplot(summary_table_meandeath, aes(x = Year, y = Mean_Death_Rate, color = State, group = State)) +
+  geom_line(linewidth = 1) +         
+  geom_point(size = 2) +        
+  labs(title = "Mean Drug Poisoning Death Rate by State (1999-2016)",
+       x = "Year",
+       y = "Mean Death Rate (Deaths per 100,000)") +
+  theme_minimal()  
+```
+
+### Average Drug Poisoning Death Rate by US Region (1999-2016)
+
+```{r}
+# Group by Year and Region, calculate the mean death rate
+mean_death_rate_by_region <- drug_mortality %>%
+  group_by(Year, Region) %>%
+  summarize(mean_death_rate = mean(`Crude Death Rate`, na.rm = TRUE), .groups = 'drop')
+
+suppressWarnings(suppressMessages(library(ggplot2)))
+ggplot(mean_death_rate_by_region, aes(x = Year, y = mean_death_rate, color = Region)) +
+  geom_line()+
+  labs(title = "Mean Drug Poisoning Death Rate by Region  (1999-2016)",
+       x = "Year", y = "Mean Death Rate (Deaths per 100,000)") +
+  theme_minimal()
+```
+
+```{r}
+suppressWarnings(suppressMessages(library(ggplot2)))
+ggplot(mean_death_rate_by_region, aes(x = Year, y = mean_death_rate, color = Region)) +
+  geom_line() +
+  labs(title = "Mean Drug Poisoning Death Rate by Region  (1999-2016)",
+       x = "Year", y = "Mean Death Rate (Deaths per 100,000)") +
+  theme_minimal() +
+  facet_wrap(~ Region, ncol = 2)
+```
+
+### Box Plot Visualization of Drug Poisoning Mortality Rates Distribution by Region
+
+```{r}
+ggplot(drug_mortality, aes(x = Region, y = `Crude Death Rate`, color = Region)) +
+    geom_boxplot() +
+    labs(title = "Distribution of Drug Poisoning Mortality Rates by Region",
+         x = "Region", y = "Mortality Rate (Deaths per 100,000)")
+```
+
+## Conclusion
+
+Four graphs were created to visualize the numerical data of the average drug poisoning mortality rates in each US region and compare these rates to the national average. When considering the research question of interest, the US region that has the greatest increase in drug poisoning mortality in comparison to all four US regions and the national average was **the Northeast region**, clearly visualized by the second line plot graphing “Average Drug Poisoning Death Rate by US Region (1999-2016)”.
+
+The initial graph, showing the representative 5 states of each US region, allows the observers to gain an initial impression of the data. With this line graph “Average Drug Poisoning Death Rate by Representative State”, we notice that Illinois (representing the Midwest) and New York (representing the Northeast) have the steepest slopes in this initial line graph, inferring that these two regions these states represent may have the higher mortality rates than the other regions. When allowing more specificity by dividing all 50 states and the District of Columbia into the four US regions, we can properly assess the mortality rates of each region and can conclude that the Northeast region has had the greatest increase in mortality rates, as indicated by the steep slope of its line (large increase over smaller period of time) as well as the magnitude of the mean death rate value (nearing 40 deaths per 100,000 at the peak in the year 2016). When ranking the steepness of linear slopes of each region, the South has the second steepest slope, then the National mortality rate, then the Midwest, and finally the West. The West region is ranked last in this ranking, though in the graph it has the third highest mortality rate of about 17 deaths per 100,000 persons, its slope plateaus around the year 2011-2012, and steadily rises as seen in the faceted line plot.
+
+The box plot presents similar information in a different format, where the Northeast, South, and Midwest have similar distributions with some higher outliers. The Midwest has the lowest mortality rates but increases over time. Yet, the West steadily increases and has less variability compared to the other categories. The West region has the lowest amount of outliers as well as a close-to-normal distribution in its box plot. The national distribution has the largest spread and the highest overall outliers, reflecting the extreme cases across the United States.
+
+#### Potential Factors Behind Observed Trends
+
+Public health responses to the declaration of a national health emergency have affected populations, yet some regions of the United States may have more ease in accessing health care due to policies like increased regulation of opioid prescriptions, efforts to expand access to treatment for opioid use disorder, and the distribution of naloxone — a life-saving medication that can reverse opioid overdoses. This may explain the plateau of the West region’s drug poisoning mortality rates, while Northeast and South rates continued to skyrocket – as these regions are politically more diverse and unlikely to resolve policy easily. Despite these efforts, drug poisoning deaths have continued to rise in the last decade, exacerbated by the increasing presence of synthetic opioids like fentanyl noted as the “third wave” of the opioid epidemic.
+
+#### Further Questions to Explore
+
+The opioid crisis undoubtedly disproportionately affects certain demographics, with higher rates among middle-aged adults, non-Hispanic whites, and men. It would be worth exploring the correlation rates between these demographics, such as sex, Hispanic origin, and age, with the newfound knowledge gained from this data analysis of US regions and death mortality rates.
+
+## References
+
+CDC. *CDC Wonder: Underlying cause of death 1999–2016.* Available from: http://wonder.cdc.gov/wonder/help/ucd.html.
+
+Centers for Disease Control and Prevention. (2024, July 8). *NCHS Data Visualization Gallery - drug poisoning mortality.* Centers for Disease Control and Prevention. https://www.cdc.gov/nchs/data-visualization/drug-poisoning-mortality/
+
+National Center for Health Statistics. *National Vital Statistics System: Mortality data.* Available from: http://www.cdc.gov/nchs/deaths.htm.
+
+“Understanding the Opioid Overdose Epidemic.” *Centers for Disease Control and Prevention*, Centers for Disease Control and Prevention, 5 Apr. 2024, www.cdc.gov/overdose-prevention/about/understanding-the-opioid-overdose-epidemic.html.
+
+Vivolo-Kantor, A., Pasalic, E., Liu, S., Martinez, P. D., Gladden, R. M., & Overdose Morbidity Team (2021). *Defining indicators for drug overdose emergency department visits and hospitalisations in ICD-10-CM coded discharge data.* Injury prevention : journal of the International Society for Child and Adolescent Injury Prevention, 27(S1), i56–i61. https://doi.org/10.1136/injuryprev-2019-043521
