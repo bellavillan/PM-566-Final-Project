@@ -3,7 +3,7 @@ project:
   output-dir: docs
 
 website:
-  title: "PM 566 - Final Project"
+  title: "R Analytics: U.S. Drug Overdose Data"
   page-navigation: true
   navbar:
     left:
@@ -11,7 +11,8 @@ website:
         text: "Home"
       - href: about.qmd
         text: "About"
-
+      - href: ref.qmd
+        text: "References"
 format:
   html:
     theme: cosmo

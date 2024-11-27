@@ -1,17 +1,23 @@
 ---
-title: "PM 566 - Final Project"
+title: "Understanding the Opioid Epidemic Through Data Science: A Regional and Demographic Analysis"
 author: Isabella Villanueva
 format:
    html:
      embed-resources: true
 ---
 ### Description
+Welcome to my data science portfolio, where I apply statistical and analytical skills to uncover critical insights into one of the most pressing public health crises in recent U.S. history. Using a comprehensive dataset from the Centers for Disease Control and Prevention (CDC) on drug overdose death rates (1999–2016), this project explores key questions about how drug mortality has evolved over time, the demographic factors at play, and regional disparities in the epidemic.  
 
-The dataset "Drug Overdose Death Rates by Drug Type, Sex, Age, Race and Hispanic Origin in the United States (1999-2016)" from the CDC includes 2,862 observations across 19 variables, such as crude and age-adjusted death rates, demographic factors, and state-level data. This dataset is essential for analyzing trends in drug poisoning mortality across U.S. regions, comparing regional death rates with the national average, and exploring how factors like race, sex, and age have influenced the opioid epidemic over time.mortality.
+Through interactive visualizations and in-depth analysis, you’ll discover:  
+1. Which regions of the U.S. have seen the sharpest increases in drug poisoning death rates over time.  
+2. Whether Hispanic origin is strongly associated with drug mortality across the nation.  
+3. How drug poisoning death rates differ between men and women in various U.S. regions.  
 
-[Download the report](docs/Bella's%20Final.pdf)
+This project not only demonstrates the power of data in addressing real-world challenges but also serves as a foundation for my growing expertise in public health analytics. Dive deeper into the insights on the full project page!  
 
-### Data Visualizations
+[View the Full Analysis in My Written Report](https://github.com/bellavillan/PM-566-Final-Project/blob/main/Written-Report.pdf)
+
+### Interactive Data Visualizations
 
 The plots display the mean drug poisoning death rates across different U.S. regions (Northeast, South, Midwest, and West) from 1999 to 2016, with each region represented by a distinct color. The national death rate is shown as a red line to highlight the overall trend alongside regional variations.
 
@@ -52,6 +58,7 @@ national_death_rate <- drug_mortality %>%
 
 # Group by Year and Region, calculate the mean death rate by region
 mean_death_rate_by_region <- drug_mortality %>%
+  filter(Region != "National") %>%
   group_by(Year, Region) %>%
   summarize(mean_death_rate = mean(`Crude Death Rate`, na.rm = TRUE), .groups = 'drop')
 
@@ -60,29 +67,127 @@ mean_death_rate_combined <- bind_rows(
   mean_death_rate_by_region %>% mutate(Source = "Region"),
   national_death_rate %>% mutate(Source = "National", Region = "National")  # Label National data as a region
 )
-
-# Plot the combined data with faceting
-suppressWarnings(suppressMessages(library(ggplot2)))
-ggplot(mean_death_rate_combined, aes(x = Year, y = mean_death_rate, color = Source, linetype = Source)) +
-  geom_line() +
-  labs(title = "Mean Drug Poisoning Death Rate by Region versus National (1999-2016)",
-       x = "Year", y = "Mean Death Rate (Deaths per 100,000)") +
-  theme_minimal() +
-  facet_wrap(~ Region) +  # Facet by Region and include a separate panel for National
-  scale_color_manual(values = c("Region" = "blue", "National" = "red"))  # Customize colors for the lines
 ```
 
 ```{r plot 2- all, echo=FALSE}
-# Assign colors to each region and red to National
-region_colors <- c("Northeast" = "deepskyblue", "South" = "chartreuse3", "Midwest" = "darkorchid3", "West" = "orange", "National" = "red")
+# Install and load necessary libraries
+suppressWarnings(suppressMessages({
+  if (!require(plotly)) install.packages("plotly")
+  library(plotly)
+  if (!require(dplyr)) install.packages("dplyr")
+  library(dplyr)
+}))
 
-# Plot the combined data with different colors for regions and red for the national line
-suppressWarnings(suppressMessages(library(ggplot2)))
-ggplot(mean_death_rate_combined, aes(x = Year, y = mean_death_rate, color = Region)) +
-  geom_line(data = subset(mean_death_rate_combined, Source == "National"), linewidth = 1.5, color = "red") +  # Red National line
-  geom_line(data = subset(mean_death_rate_combined, Source == "Region"), alpha = 0.7) +  # Regional lines with transparency
-  labs(title = "Mean Drug Poisoning Death Rate by Region and National (1999-2016)",
-       x = "Year", y = "Mean Death Rate (Deaths per 100,000)") +
-  theme_minimal() +
-  scale_color_manual(values = region_colors)
+# Assign colors to each region and red for National
+region_colors <- c("Northeast" = "darkorange2", "South" = "#8494FF", 
+                   "Midwest" = "aquamarine3", "West" = "#ED68ED", "National"= "red")
+
+# Create separate datasets for National and Region
+national_data <- subset(mean_death_rate_combined, Source == "National")
+region_data <- subset(mean_death_rate_combined, Source == "Region")
+
+# Create the interactive plot
+mean_death_rate_region_nation <- plot_ly()
+
+# Add the National line
+mean_death_rate_region_nation <- mean_death_rate_region_nation %>%
+  add_lines(
+    data = national_data,
+    x = ~Year,
+    y = ~mean_death_rate,
+    name = "National",  # Legend entry
+    line = list(color = "red", width = 3),  # Red line
+    hoverinfo = "text",
+    text = ~paste("Year:", Year, "<br>Mean Rate:", mean_death_rate, "<br>Region: National")
+  )
+
+# Add the regional lines
+mean_death_rate_region_nation <- mean_death_rate_region_nation %>%
+  add_lines(
+    data = region_data,
+    x = ~Year,
+    y = ~mean_death_rate,
+    color = ~Region,  # Map colors to Region
+    colors = region_colors,
+    name = ~Region,  # Legend entries for regions
+    line = list(color = region_colors, width = 2),  
+    hoverinfo = "text",
+    text = ~paste("Year:", Year, "<br>Mean Rate:", mean_death_rate, "<br>Region:", Region),
+    opacity = 0.7  # Transparency for regional lines
+  )
+
+# Customize the layout
+mean_death_rate_region_nation <- mean_death_rate_region_nation %>%
+  layout(
+    title = "Mean Drug Poisoning Death Rate by Region and National (1999-2016)",
+    xaxis = list(title = "Year"),
+    yaxis = list(title = "Mean Death Rate (Deaths per 100,000)"),
+    legend = list(title = list(text = "Region"))
+  )
+
+# Display the plot
+mean_death_rate_region_nation
 ```
+
+```{r, echo=FALSE}
+# Install and load necessary libraries
+suppressWarnings(suppressMessages({
+  if (!require(plotly)) install.packages("plotly")
+  library(plotly)
+  if (!require(dplyr)) install.packages("dplyr")
+  library(dplyr)
+}))
+
+# Filter and prepare the data
+filtered_data <- drug_mortality %>%
+  filter(`Race and Hispanic Origin` %in% c("All Races - All Origins", 
+                                           "Non-Hispanic Black", 
+                                           "Non-Hispanic White", 
+                                           "Hispanic")) %>%
+  group_by(Year, `Race and Hispanic Origin`) %>%
+  summarize(mean_crude_rate = mean(`Crude Death Rate`, na.rm = TRUE), .groups = "drop")  # Average Crude Death Rate
+
+# Create an interactive scatterplot with a dropdown menu
+fig <- plot_ly(filtered_data, 
+               x = ~Year, 
+               y = ~mean_crude_rate, 
+               type = 'scatter', 
+               mode = 'lines+markers', 
+               color = ~`Race and Hispanic Origin`,
+               colors = "Set2",  # Use a color palette
+               text = ~paste("Year:", Year, "<br>Rate:", mean_crude_rate),
+               hoverinfo = "text") %>%
+  layout(
+    title = "Association Between Race/Hispanic Origin and Drug Mortality",
+    xaxis = list(title = "Year"),
+    yaxis = list(title = "Mean Crude Death Rate (per 100,000)"))
+
+# Display the plot
+fig
+```
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+# Load necessary libraries
+suppressWarnings(suppressMessages({
+  if (!require(plotly)) install.packages("plotly")
+  library(plotly)
+  if (!require(dplyr)) install.packages("dplyr")
+  library(dplyr)
+}))
+
+# Create the ggplot bar plot
+sex_vs_crude_plot <- ggplot(drug_mortality, aes(x = Year, y = `Crude Death Rate`, fill = Sex)) +
+  geom_bar(stat = "identity") + 
+  labs(title = "Drug Poisoning Death Rates by Sex and Region (1999-2016)",
+       x = "Year", y = "Crude Death Rate (per 100,000)") +
+  facet_wrap(~ Sex) +
+  theme_minimal() +
+  scale_fill_manual(values = c("Male" = "blue", "Female" = "pink"))
+
+# Convert the ggplot to an interactive plotly plot
+interactive_sex_vs_crude_plot <- ggplotly(sex_vs_crude_plot)
+
+# Display the plot
+interactive_sex_vs_crude_plot
+```
+
+

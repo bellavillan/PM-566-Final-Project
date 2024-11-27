@@ -2,9 +2,12 @@
 title: "About"
 ---
 
+## Background
 The opioid crisis, declared a national health emergency in 2023, has been a public health issue since the late 1990s, when misleading assurances about the addictive nature of prescription opioids led to widespread over-prescribing. Over time, this crisis unfolded in three distinct waves: the initial rise in prescription opioid-related deaths (1999-2010), a surge in heroin use and overdose deaths after restrictions on prescription opioids (2010-2013), and the rapid increase in deaths from synthetic opioids like fentanyl, which are far more potent and lethal (2013-present).
 
+## Selected Dataset
 
+The dataset, ‘Drug Overdose Death Rates by Drug Type, Sex, Age, Race, and Hispanic Origin in the United States (1999-2016),’ was obtained from the [Centers for Disease Control and Prevention (CDC)](https://data.cdc.gov/NCHS/NCHS-Drug-Poisoning-Mortality-by-State-United-Stat/xbxb-epbu/about_data). It includes 2,862 observations across 19 variables, such as crude and age-adjusted death rates, demographic factors, and state-level data. This dataset serves as the foundation for the analysis presented on this site.
 
 ## Questions of Interest:
 
@@ -12,4 +15,4 @@ The opioid crisis, declared a national health emergency in 2023, has been a publ
 
 2.  Throughout the United States, is there a strong association with Hispanic origin and drug mortality?
 
-3.  How do drug poisoning death rates compare between men and women across different regions of the U.S. from 1999-2016?
+3.  How do drug poisoning death rates compare between men and women nationally from 1999-2016?

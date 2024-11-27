@@ -1,0 +1,13 @@
+---
+title: "References"
+---
+
+Centers for Disease Control and Prevention. *CDC Wonder: Underlying cause of death 1999–2016*. Available from: http://wonder.cdc.gov/wonder/help/ucd.html.
+
+Centers for Disease Control and Prevention. (2024, July 8). *NCHS Data Visualization Gallery - drug poisoning mortality.* Centers for Disease Control and Prevention. https://www.cdc.gov/nchs/data-visualization/drug-poisoning-mortality/ 
+
+National Center for Health Statistics. *National Vital Statistics System: Mortality data.* Available from: http://www.cdc.gov/nchs/deaths.htm.
+
+“Understanding the Opioid Overdose Epidemic.” Centers for Disease Control and Prevention, 5 Apr. 2024, www.cdc.gov/overdose-prevention/about/understanding-the-opioid-overdose-epidemic.html. 
+
+Vivolo-Kantor, A., Pasalic, E., Liu, S., Martinez, P. D., Gladden, R. M., & Overdose Morbidity Team (2021). *Defining indicators for drug overdose emergency department visits and hospitalisations in ICD-10-CM coded discharge data.* Injury prevention : journal of the International Society for Child and Adolescent Injury Prevention, 27(S1), i56–i61. https://doi.org/10.1136/injuryprev-2019-043521

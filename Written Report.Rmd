@@ -75,40 +75,49 @@ In the dataset I have chosen: “Drug Overdose Death Rates by Drug Type, Sex, Ag
 
 2.  Throughout the United States, is there a strong association with Hispanic origin and drug mortality?
 
-3.  How do drug poisoning death rates compare between men and women across different regions of the U.S. from 1999-2016?
+3.  How do drug poisoning death rates compare between men and women nationally from 1999-2016?
 
 # Methods
 
-This public access dataset was created by the National Center for Health Statistics (NCHS) in December 2017, and available on the CDC Data website. Among the NCHS content on this database, a plethora of drug poisoning mortality datasets and visualization tools are available to assess the opioid crisis under different lenses. For this dataset, multiple variables of interest were included like sex, age, race and Hispanic origin, and region. This made this specific dataset the most attractive because of its amount of information available.
+### How and Where the Data Were Acquired
+
+This public access dataset was created by the National Center for Health Statistics (NCHS) in December 2017, and available on the CDC Data website, linked on my website's About page. Among the NCHS content on this database, a plethora of drug poisoning mortality datasets and visualization tools are available to assess the opioid crisis under different lenses. For this dataset, multiple variables of interest were included like sex, age, race and Hispanic origin, and region. This made this specific dataset the most attractive because of its amount of information available.
+
+## Cleaning and Wrangling the Data
 
 ### Understanding the NA Values
 
-In cleaning the dataset, checking for NA values is an important step. Using the function: `colSums(is.na(drug_mortality))`, there is an equal amount of NA values across the variables named `Age-adjusted Rate`, `Standard Error for Age-adjusted Rate`, `Lower Confidence Limit for Age-adjusted Rate`, `Upper Confidence Limit for Age-adjusted Rate`. The age-adjusted rates are missing for many entries, and the decision to filter them out or use an alternative rate (like crude rates) must be made.
+In cleaning the dataset, checking for NA values is an important step. Using the two functions: `colSums(is.na(drug_mortality))`, there is an equal amount of NA values across the variables named Age-adjusted Rate, Standard Error for Age-adjusted Rate, Lower Confidence Limit for Age-adjusted Rate, and Upper Confidence Limit for Age-adjusted Rate. The age-adjusted rates are missing for many entries, and the decision to filter them out or use an alternative rate (like crude rates) must be made.
 
-This equal amount of 1728 NA values is due to how age-adjusted rates cannot be calculated without the known weight of each age group within a population each year. When assessing the dataset, the NA values only occur when matched with the national data (State variable value = “United States”) as well as the Age Group variable is a numbered age range other than “All Ages”. Because all of the NA values are related to the age-adjusted rates, this is not an issue for using the data. Deleting the data with NA values would be a mistake as it augments our understanding of the true data, and imputing the data to be the mode or mean of similar characteristics is not possible because it would not be accurate to what the variables measure.
+This equal amount of 1728 NA values is due to how age-adjusted rates cannot be calculated without the known weight of each age group within a population each year. When assessing the dataset, the NA values only occur when matched with the national data (when the State variable value is equal to "United States") as well as when the Age Group variable is a numbered age range other than the value “All Ages”. Because all of the NA values are related to the age-adjusted rates, this is not an issue for using the data. Deleting the data with NA values would be a mistake as it augments our understanding of the true data, and imputing the data to be the mode or mean of similar characteristics is not possible because it would not be accurate to what the variables measure.
 
-Crude death rates will be used instead when considering specific states and specific age ranges, gender, or ethnicity and when considering the national data, the variable “US Crude Rates” will be used.
+Crude death rates will be used instead when considering specific states and specific age ranges, gender, or ethnicity and when considering the national data, the variable US Crude Rates will be used.
 
 ### Removing Irrelevant Variables
 
-Next in cleaning the data, I opted to remove two columns (variables) because they were not relevant to the data being analyzed. The variable “Unit” and “State Crude Rate in Range” will not be necessary in this project because of our intended research question and scope of our data analysis. The original dataset’s Unit variable has only one value of “per 100,000 population". This does not fill any gaps of information that another variable cannot inform, and removing this variable is not a loss in the greater scope of the data. The State Crude Rate in Range is not relevant to the question of interest as we are considering regions in the United States instead of individual states as well as the comparison to the US Crude Rate, the State Crude Rate in Range variable is also repetitive and contains excess information.
+Next in cleaning the data, I opted to remove two columns (variables) because they were not relevant to the data being analyzed. The Unit and State Crude Rate in Range variables will not be necessary in this project because of our intended research question and scope of our data analysis. The original dataset’s Unit variable has only one value of “per 100,000 population". This does not fill any gaps of information that another variable cannot inform, and removing this variable is not a loss in the greater scope of the data. The variable State Crude Rate in Range is not relevant to the question of interest as we are considering regions in the United States instead of individual states as well as the comparison to the US Crude Rate, the State Crude Rate in Range variable is also repetitive and contains excess information.
 
-After cleaning the data and using the function: `str(drug_mortality[sapply(drug_mortality, is.character)])`, 6 variables were loaded in as `chr` (character or text) variables: State, Sex, Age Group, Race and Hispanic Origin State Crude Rate in Range, and Unit have been removed Using the function: `str(drug_mortality[sapply(drug_mortality, is.double)])`, 13 variables were loaded in as `dbl` (double or numeric with decimal) variables: Year, Deaths, Population, Crude Death Rate, Standard Error for Crude Rate, Lower Confidence Limit for Crude Rate, Upper Confidence Limit for Crude Rate, Age-adjusted Rate, Standard Error for Age-adjusted Rate, Lower Confidence Limit for Age-adjusted Rate, Upper Confidence Limit for Age-adjusted Rate, US Crude Rate, and US Age-adjusted Rate
+After cleaning the data and using the functions: `str(drug_mortality[sapply(drug_mortality, is.character)])`, six variables were loaded in as `chr` (character or text) variables: State, Sex, Age Group, Race and Hispanic Origin, State Crude Rate in Range, and Unit. The last two variables have been removed. Using the functions: `str(drug_mortality[sapply(drug_mortality, is.double)])`, 13 variables were loaded in as `dbl` (double or numeric with decimal) variables: Year, Deaths, Population, Crude Death Rate, Standard Error for Crude Rate, Lower Confidence Limit for Crude Rate, Upper Confidence Limit for Crude Rate, Age-adjusted Rate, Standard Error for Age-adjusted Rate, Lower Confidence Limit for Age-adjusted Rate, Upper Confidence Limit for Age-adjusted Rate, US Crude Rate, and US Age-adjusted Rate.
 
-Seeing that the Sex, Race and Hispanic Origin, and Age Group variables are character or text variables and have repeat values, I decided to create these variables as factors where repeated values are then organized into categories (i.e. Sex has “Both Sexes”, “Female”, and “Male”). This will make calling on these variables in the future easier, like in the instance of drug mortality rates being compared between the male and female sexes. Using the function: `str(drug_mortality)` , I was able to authenticate the conversion of variables to categorical variables where the variables values were listed by each unique value (i.e. Sex should only have 3 values if done correctly).
+Seeing that the Sex, Race and Hispanic Origin, and Age Group variables are character or text variables and have repeat values, I decided to create these variables as factors where repeated values are then organized into categories (i.e. Sex the values: “Both Sexes”, “Female”, and “Male”). This will make calling on these variables in the future easier, like in the instance of comparing drug mortality rates between the male and female sexes. Using the function: `str(drug_mortality)` , I was able to authenticate the conversion of variables to categorical variables where the variables values were listed by each unique value (i.e. the Sex variable should only have 3 values if done correctly).
 
 In the case of the variable “Race and Hispanic Origin” (RHO), values like All Races - All Origins, Non-Hispanic Black, Non-Hispanic White, and Hispanic were all present in this column. To combat the excess of wordings to get information about this variable, I opted to create a new categorical variable (new column) named Hispanic and assign values whether the individual is of Hispanic origin or not. When the RHO column indicated only the word “Hispanic” the value would be 1, while the value would be 0 if the RHO column indicated “Non-Hispanic” along with their race, or if it indicated “All Races - All Origins”.
 
-### Representative States for US Regions
+### Representative States for U.S. Regions
 
-Our research question of interest asks what regions have had the greatest increase in drug poisoning mortality, I also opted to divide all 50 states (and the District of Columbia) into their respective US regions according the [how the CDC defines the geographic regions in the United States](https://www.cdc.gov/nchs/hus/sources-definitions/geographic-region.htm). The previous use of the representative 5 states for the US regions is helpful to guide our hypotheses on which regions are expected to have higher drug poisoning mortality rates, but to get a more specific visualization of the data, use of all 50 states (and additional territory of the nation’s capital, Washington D.C.) is necessary.
+Our research question of interest asks what regions have had the greatest increase in drug poisoning mortality, I divided all 50 states (and the District of Columbia) into their respective US regions according the [how the CDC defines the geographic regions in the United States](https://www.cdc.gov/nchs/hus/sources-definitions/geographic-region.htm). In order to gain a more comprehensive look at the data presented, and accurately create a visualization of the data, the use of all 50 states (and additional territory of the nation’s capital, Washington D.C.) is necessary.
 
-In the State variable, “United States” is also included as a value which indicates that data of those rows are national data, which points to the US Crude Rates. This will be useful when comparing the regions to the national rates.
+In the `State` variable, “United States” is also included as a value which indicates that data of those rows are national data. This points to the US Crude Rates, which will be useful when comparing the regions to the national rates.
+
+#Add more
+
+### Tools Used for Data Exploration
+
 
 # Results 
 ### Average Drug Poisoning Death Rate by US Region Compared to the National Average (1999-2016)
 
-```{r faceted plot, echo=FALSE}
+```{r faceted plot, echo=FALSE, out.width="85%", fig.cap="Faceted Line Plot by Region vs National"}
 # Calculate national mean death rate by year using 'US Crude Rate'
 national_death_rate <- drug_mortality %>%
   group_by(Year) %>%
@@ -116,6 +125,7 @@ national_death_rate <- drug_mortality %>%
 
 # Group by Year and Region, calculate the mean death rate by region
 mean_death_rate_by_region <- drug_mortality %>%
+  filter(Region != "National") %>%
   group_by(Year, Region) %>%
   summarize(mean_death_rate = mean(`Crude Death Rate`, na.rm = TRUE), .groups = 'drop')
 
@@ -135,29 +145,80 @@ ggplot(mean_death_rate_combined, aes(x = Year, y = mean_death_rate, color = Sour
   facet_wrap(~ Region) +  # Facet by Region and include a separate panel for National
   scale_color_manual(values = c("Region" = "blue", "National" = "red"))  # Customize colors for the lines
 ```
-```{r plot 2- all, echo=FALSE}
+# Analysis for graph above 
+
+```{r plot 2- all, echo=FALSE, out.width="85%", fig.cap="Line Plot of US Regions Compared to National Average Drug Mortality"}
 # Assign colors to each region and red to National
-region_colors <- c("Northeast" = "deepskyblue", "South" = "chartreuse3", "Midwest" = "darkorchid3", "West" = "orange", "National" = "red")
+region_colors <- c("Northeast" = "deepskyblue", "South" = "chartreuse3", 
+                   "Midwest" = "darkorchid3", "West" = "orange", "National" = "red")
 
 # Plot the combined data with different colors for regions and red for the national line
 suppressWarnings(suppressMessages(library(ggplot2)))
+
 ggplot(mean_death_rate_combined, aes(x = Year, y = mean_death_rate, color = Region)) +
-  geom_line(data = subset(mean_death_rate_combined, Source == "National"), linewidth = 1.5, color = "red") +  # Red National line
+  geom_line(data = subset(mean_death_rate_combined, Source == "National"), linewidth = 1.5) +  # National line with mapped color
   geom_line(data = subset(mean_death_rate_combined, Source == "Region"), alpha = 0.7) +  # Regional lines with transparency
   labs(title = "Mean Drug Poisoning Death Rate by Region and National (1999-2016)",
-       x = "Year", y = "Mean Death Rate (Deaths per 100,000)") +
+       x = "Year", y = "Mean Death Rate (Deaths per 100,000)",
+       color = "Region") +  # Update legend title
   theme_minimal() +
-  scale_color_manual(values = region_colors)
+  scale_color_manual(values = region_colors)  # Custom color palette including National
 ```
 
 This graph categorizes all 50 states and the District of Columbia into the four US regions. With this, we can properly assess the mortality rates of each region and can conclude that the Northeast region has had the greatest increase in mortality rates, as indicated by the steep slope of its line (large increase over smaller period of time) as well as the magnitude of the mean death rate value (nearing 40 deaths per 100,000 at the peak in the year 2016). When ranking the steepness of linear slopes of each region, the South has the second steepest slope, then the National mortality rate, then the Midwest, and finally the West. The West region is ranked last in this ranking, though in the graph it has the third highest mortality rate of about 17 deaths per 100,000 persons, its slope plateaus around the year 2011-2012, and steadily rises as seen in the faceted line plot. (fix national data explanation)
+
+```{r Hispanic ethnicity, echo=FALSE, warning = FALSE, message=FALSE, out.width="85%", fig.cap="Line Plot with Dashed Regression Lines of Race/Ethnicity"}
+# Filter and prepare the data
+filtered_data <- drug_mortality %>%
+  filter(`Race and Hispanic Origin` %in% c("All Races - All Origins", 
+                                           "Non-Hispanic Black", 
+                                           "Non-Hispanic White", 
+                                           "Hispanic")) %>%
+  group_by(Year, `Race and Hispanic Origin`) %>%
+  summarize(mean_crude_rate = mean(`Crude Death Rate`, na.rm = TRUE), .groups = "drop")  # Average Crude Death Rate
+
+# Calculate correlation coefficients (R value) for each group
+correlations <- filtered_data %>%
+  group_by(`Race and Hispanic Origin`) %>%
+  summarize(correlation = cor(Year, mean_crude_rate, use = "complete.obs"))
+
+# Load ggplot2
+suppressWarnings(suppressMessages(library(ggplot2)))
+
+# Create a scatter line plot with regression lines and correlation R values
+  ggplot(filtered_data, aes(x = Year, y = mean_crude_rate, color = `Race and Hispanic Origin`, group = `Race and Hispanic Origin`)) +
+  geom_line(size = 1, alpha = 0.8) +  # Line plot with transparency
+  geom_point(size = 3, alpha = 0.8) +  # Points with transparency
+ geom_smooth(method = "lm", se = FALSE, aes(color = `Race and Hispanic Origin`), linetype = "dashed", alpha = 0.1) +  # Regression line (no standard error shading)
+  labs(
+    title = "Association Between Race/Hispanic Origin and Drug Mortality",
+    x = "Year",
+    y = "Mean Crude Death Rate (per 100,000)",
+    color = "Race and Hispanic Origin"  # Legend title
+  ) +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(hjust = 0.5),  # Center the title
+    legend.position = "bottom"  # Place legend at the bottom
+  ) +
+  scale_color_brewer(palette = "Set2")  # Use a visually distinct color palette
+```
+
+
+```{r Sex vs Crude, echo=FALSE, out.width="85%", fig.cap="Faceted Barplot by Sex"}
+ggplot(drug_mortality, aes(x = Year, y = `Crude Death Rate`, fill = Sex)) +
+  geom_bar(stat = "identity") + 
+  labs(title = "Drug Poisoning Death Rates by Sex and Region (1999-2016)",
+       x = "Year", y = "Crude Death Rate (per 100,000)") +
+  facet_wrap(~ Sex) +
+  theme_minimal() +
+  scale_fill_manual(values = c("Male" = "blue", "Female" = "pink"))
+```
 
 # Conclusion
 
 The following graphs were created to visualize the numerical data of the average drug poisoning mortality rates in each US region and compare these rates to the national average. When considering the research question of interest, the US region that has the greatest increase in drug poisoning mortality in comparison to all US four regions and the national average was **the Northeast region**, clearly visualized by the second line plot graphing “Average Drug Poisoning Death Rate by US Region (1999-2016)”.
 
-
-The box plot presents similar information in a different format, where the Northeast, South, and Midwest have similar distributions with some higher outliers, but the West consistently shows lower mortality rates, visualized in lowest amount of outliers (even its outliers are lower than the other 4 categories) as well as a seemingly normal distribution in its box plot. The Midwest, like the line plots, has the lowest mortality rates but drastically increases over time. The national distribution has the largest spread and the highest overall outliers, reflecting the extreme cases across the U.S.
 
 ## Potential Factors Behind Observed Trends
 
