@@ -68,12 +68,14 @@ ul.task-list li input[type="checkbox"] {
     "search-label": "Search"
   }
 }</script>
+</head><body class="nav-fixed">\usepackage{floatrow}
+\floatsetup[figure]{capposition=top}
 
 
 <link rel="stylesheet" href="styles.css">
-</head>
 
-<body class="nav-fixed">
+
+
 
 <div id="quarto-search-results"></div>
   <header id="quarto-header" class="headroom fixed-top">
@@ -129,18 +131,22 @@ ul.task-list li input[type="checkbox"] {
   <ul class="collapse">
   <li><a href="#understanding-the-na-values" id="toc-understanding-the-na-values" class="nav-link" data-scroll-target="#understanding-the-na-values">Understanding the NA Values</a></li>
   <li><a href="#removing-irrelevant-variables" id="toc-removing-irrelevant-variables" class="nav-link" data-scroll-target="#removing-irrelevant-variables">Removing Irrelevant Variables</a></li>
+  <li><a href="#checking-the-structure-of-the-data" id="toc-checking-the-structure-of-the-data" class="nav-link" data-scroll-target="#checking-the-structure-of-the-data">Checking the Structure of the Data</a></li>
   <li><a href="#representative-states-for-u.s.-regions" id="toc-representative-states-for-u.s.-regions" class="nav-link" data-scroll-target="#representative-states-for-u.s.-regions">Representative States for U.S. Regions</a></li>
   <li><a href="#tools-used-for-data-exploration" id="toc-tools-used-for-data-exploration" class="nav-link" data-scroll-target="#tools-used-for-data-exploration">Tools Used for Data Exploration</a></li>
   </ul></li>
   </ul></li>
   <li><a href="#results" id="toc-results" class="nav-link" data-scroll-target="#results">Results</a>
   <ul class="collapse">
-  <li><a href="#average-drug-poisoning-death-rate-by-us-region-compared-to-the-national-average-1999-2016" id="toc-average-drug-poisoning-death-rate-by-us-region-compared-to-the-national-average-1999-2016" class="nav-link" data-scroll-target="#average-drug-poisoning-death-rate-by-us-region-compared-to-the-national-average-1999-2016">Average Drug Poisoning Death Rate by US Region Compared to the National Average (1999-2016)</a></li>
+  <li><a href="#figure-1-analysis" id="toc-figure-1-analysis" class="nav-link" data-scroll-target="#figure-1-analysis">Figure 1 Analysis</a></li>
+  <li><a href="#figure-2-analysis" id="toc-figure-2-analysis" class="nav-link" data-scroll-target="#figure-2-analysis">Figure 2 Analysis</a></li>
+  <li><a href="#figure-3-analysis" id="toc-figure-3-analysis" class="nav-link" data-scroll-target="#figure-3-analysis">Figure 3 Analysis</a></li>
+  <li><a href="#figure-4-analysis" id="toc-figure-4-analysis" class="nav-link" data-scroll-target="#figure-4-analysis">Figure 4 Analysis</a></li>
+  <li><a href="#figure-5-analysis" id="toc-figure-5-analysis" class="nav-link" data-scroll-target="#figure-5-analysis">Figure 5 Analysis</a></li>
   </ul></li>
-  <li><a href="#analysis-for-graph-above" id="toc-analysis-for-graph-above" class="nav-link" data-scroll-target="#analysis-for-graph-above">Analysis for graph above</a></li>
   <li><a href="#conclusion" id="toc-conclusion" class="nav-link" data-scroll-target="#conclusion">Conclusion</a>
   <ul class="collapse">
-  <li><a href="#potential-factors-behind-observed-trends" id="toc-potential-factors-behind-observed-trends" class="nav-link" data-scroll-target="#potential-factors-behind-observed-trends">Potential Factors Behind Observed Trends</a></li>
+  <li><a href="#public-health-challenges-and-targeted-interventions" id="toc-public-health-challenges-and-targeted-interventions" class="nav-link" data-scroll-target="#public-health-challenges-and-targeted-interventions">Public Health Challenges and Targeted Interventions</a></li>
   </ul></li>
   <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references">References</a></li>
   </ul>
@@ -190,13 +196,15 @@ ul.task-list li input[type="checkbox"] {
 <li><strong>2013- Present</strong> — The rapid rise of deaths due to illicitly manufactured fentanyl (synthetic opioid overdose), which is far more potent than heroin or prescription opioids. Yet fentanyl is exponentially more dangerous because of its intense potency in small quantities – making it lethal.</li>
 </ol>
 <p>National public health agencies, like the CDC, are able to report the numbers of deaths in the United States because of the death certificate reporting process, which involves the use of International Classification of Diseases, Tenth Revision (ICD–10) codes. “Drug-poisoning deaths are defined as having ICD–10 underlying cause-of-death codes X40–X44 (unintentional), X60–X64 (suicide), X85 (homicide), or Y10–Y14 (undetermined intent)” (CDC). According to National Library of Medicine article “Defining indicators for drug overdose emergency department visits and hospitalisations in ICD-10-CM coded discharge data”, the diagnosis code being used for drug poisoning cases would begin with the letter T, “drug poisoning T-codes” indicate “poisoning by unspecified drugs, medicaments and biological substances, accidental (unintentional), initial encounter” (Vivolo-Kantor et al.).</p>
-<p>In the dataset I have chosen: “Drug Overdose Death Rates by Drug Type, Sex, Age, Race and Hispanic Origin in the United States (1999 – 2016)”, the CDC reports 2862 observations (rows) of 19 variables (columns), such as crude and age-related death rates related to drug poisoning, the states reporting these deaths, and the demographic data from each individual – involving salient identity factors like race and Hispanic origin, sex, and age. These variables will be vital to exploring which US region has seen the largest influx of drug poisoning mortality rates in comparison to the US crude rate of drug poisoning mortality.</p>
+<p>In the dataset I have chosen: “Drug Overdose Death Rates by Drug Type, Sex, Age, Race and Hispanic Origin in the United States (1999 – 2016)”, the CDC reports 2862 observations (rows) of 19 variables (columns), such as crude and age-related death rates related to drug poisoning, the states reporting these deaths, and the demographic data from each individual – involving salient identity factors like race and Hispanic origin, sex, and age. These variables will be vital to exploring which US region has seen the largest influx of drug poisoning mortality rates in comparison to the US crude rate of drug poisoning mortality. Public health uses epidemiological data analysis to inform which demographics are most at risk and target prevention efforts in populations with similar characteristics.</p>
 <section id="questions-of-interest" class="level2">
 <h2 class="anchored" data-anchor-id="questions-of-interest">Questions of Interest:</h2>
+<p>To focus my data analysis skills on this comprehensive dataset, four questions guide my research on who is most affected by drug mortality:</p>
 <ol type="1">
 <li><p>Over time (1999-2016) and in consideration of all ages and all origins, which regions of the United States have had the greatest increase of drug poisoning death rates?</p></li>
 <li><p>Throughout the United States, is there a strong association with Hispanic origin and drug mortality?</p></li>
-<li><p>How do drug poisoning death rates compare between men and women nationally from 1999-2016?</p></li>
+<li><p>How do drug poisoning death counts compare between men and women nationally from 1999-2016?</p></li>
+<li><p>Which age ranges see the most drug poisoning deaths?</p></li>
 </ol>
 </section>
 </section>
@@ -212,83 +220,128 @@ ul.task-list li input[type="checkbox"] {
 <h3 class="anchored" data-anchor-id="understanding-the-na-values">Understanding the NA Values</h3>
 <p>In cleaning the dataset, checking for NA values is an important step. Using the two functions: <code>colSums(is.na(drug_mortality))</code>, there is an equal amount of NA values across the variables named Age-adjusted Rate, Standard Error for Age-adjusted Rate, Lower Confidence Limit for Age-adjusted Rate, and Upper Confidence Limit for Age-adjusted Rate. The age-adjusted rates are missing for many entries, and the decision to filter them out or use an alternative rate (like crude rates) must be made.</p>
 <p>This equal amount of 1728 NA values is due to how age-adjusted rates cannot be calculated without the known weight of each age group within a population each year. When assessing the dataset, the NA values only occur when matched with the national data (when the State variable value is equal to “United States”) as well as when the Age Group variable is a numbered age range other than the value “All Ages”. Because all of the NA values are related to the age-adjusted rates, this is not an issue for using the data. Deleting the data with NA values would be a mistake as it augments our understanding of the true data, and imputing the data to be the mode or mean of similar characteristics is not possible because it would not be accurate to what the variables measure.</p>
-<p>Crude death rates will be used instead when considering specific states and specific age ranges, gender, or ethnicity and when considering the national data, the variable US Crude Rates will be used.</p>
+<p>Crude death rates will be used instead when considering specific states and specific age ranges and when considering the national data, the variable US Crude Rates will be used.</p>
 </section>
 <section id="removing-irrelevant-variables" class="level3">
 <h3 class="anchored" data-anchor-id="removing-irrelevant-variables">Removing Irrelevant Variables</h3>
 <p>Next in cleaning the data, I opted to remove two columns (variables) because they were not relevant to the data being analyzed. The Unit and State Crude Rate in Range variables will not be necessary in this project because of our intended research question and scope of our data analysis. The original dataset’s Unit variable has only one value of “per 100,000 population”. This does not fill any gaps of information that another variable cannot inform, and removing this variable is not a loss in the greater scope of the data. The variable State Crude Rate in Range is not relevant to the question of interest as we are considering regions in the United States instead of individual states as well as the comparison to the US Crude Rate, the State Crude Rate in Range variable is also repetitive and contains excess information.</p>
+</section>
+<section id="checking-the-structure-of-the-data" class="level3">
+<h3 class="anchored" data-anchor-id="checking-the-structure-of-the-data">Checking the Structure of the Data</h3>
 <p>After cleaning the data and using the functions: <code>str(drug_mortality[sapply(drug_mortality, is.character)])</code>, six variables were loaded in as <code>chr</code> (character or text) variables: State, Sex, Age Group, Race and Hispanic Origin, State Crude Rate in Range, and Unit. The last two variables have been removed. Using the functions: <code>str(drug_mortality[sapply(drug_mortality, is.double)])</code>, 13 variables were loaded in as <code>dbl</code> (double or numeric with decimal) variables: Year, Deaths, Population, Crude Death Rate, Standard Error for Crude Rate, Lower Confidence Limit for Crude Rate, Upper Confidence Limit for Crude Rate, Age-adjusted Rate, Standard Error for Age-adjusted Rate, Lower Confidence Limit for Age-adjusted Rate, Upper Confidence Limit for Age-adjusted Rate, US Crude Rate, and US Age-adjusted Rate.</p>
-<p>Seeing that the Sex, Race and Hispanic Origin, and Age Group variables are character or text variables and have repeat values, I decided to create these variables as factors where repeated values are then organized into categories (i.e.&nbsp;Sex the values: “Both Sexes”, “Female”, and “Male”). This will make calling on these variables in the future easier, like in the instance of comparing drug mortality rates between the male and female sexes. Using the function: <code>str(drug_mortality)</code> , I was able to authenticate the conversion of variables to categorical variables where the variables values were listed by each unique value (i.e.&nbsp;the Sex variable should only have 3 values if done correctly).</p>
+<section id="wrangling-the-demographic-data" class="level4">
+<h4 class="anchored" data-anchor-id="wrangling-the-demographic-data">Wrangling the Demographic Data</h4>
+<p>Seeing that the Sex, Race and Hispanic Origin, and Age Group variables are character or text variables and have repeat values, I decided to create these variables as factors where repeated values are then organized into categories (i.e.&nbsp;Sex the values: “Both Sexes”, “Female”, and “Male”). This will make calling on these variables in the future easier, like in the instance of comparing drug mortality rates between the male and female sexes. Using the function: <code>str(drug_mortality)</code>, I was able to authenticate the conversion of variables to categorical variables where the variables values were listed by each unique value (i.e.&nbsp;the Sex variable should only have 3 values if done correctly).</p>
 <p>In the case of the variable “Race and Hispanic Origin” (RHO), values like All Races - All Origins, Non-Hispanic Black, Non-Hispanic White, and Hispanic were all present in this column. To combat the excess of wordings to get information about this variable, I opted to create a new categorical variable (new column) named Hispanic and assign values whether the individual is of Hispanic origin or not. When the RHO column indicated only the word “Hispanic” the value would be 1, while the value would be 0 if the RHO column indicated “Non-Hispanic” along with their race, or if it indicated “All Races - All Origins”.</p>
+<p>For the Age Group variable, I wanted to know which age ranges were already sorted by the original data set and if I needed to make any new adjustments to the data. Using the functions <code>unique(drug_mortality$</code>Age Group<code>)</code>, I was able to retrieve all possible values in the Age Group variable which were 9 values: “All Ages”, “0–14”, “15–24”, “25–34”, “35–44”, “45–54” ,“55–64”, “65–74”, “75+” . Due to the even distribution of these given age ranges, I decided to keep the age ranges as it is to use for further data analysis and comparison to drug poisoning mortality.</p>
+</section>
 </section>
 <section id="representative-states-for-u.s.-regions" class="level3">
 <h3 class="anchored" data-anchor-id="representative-states-for-u.s.-regions">Representative States for U.S. Regions</h3>
-<p>Our research question of interest asks what regions have had the greatest increase in drug poisoning mortality, I divided all 50 states (and the District of Columbia) into their respective US regions according the <a href="https://www.cdc.gov/nchs/hus/sources-definitions/geographic-region.htm">how the CDC defines the geographic regions in the United States</a>. In order to gain a more comprehensive look at the data presented, and accurately create a visualization of the data, the use of all 50 states (and additional territory of the nation’s capital, Washington D.C.) is necessary.</p>
-<p>In the <code>State</code> variable, “United States” is also included as a value which indicates that data of those rows are national data. This points to the US Crude Rates, which will be useful when comparing the regions to the national rates.</p>
-<p>#Add more</p>
+<p>One of this project’s research questions of interest asks what regions have had the greatest increase in drug poisoning mortality, I divided all 50 states (and the District of Columbia) into their respective US regions according the <a href="https://www.cdc.gov/nchs/hus/sources-definitions/geographic-region.htm">how the CDC defines the geographic regions in the United States</a>. In order to gain a more comprehensive look at the data presented, and accurately create a visualization of the data, the use of all 50 states (and additional territory of the nation’s capital, Washington D.C.) is necessary.</p>
+<p>In the <code>State</code> variable, “United States” is also included as a value which indicates that data of those rows are national data. Instead of calculating average drug mortality rates from the <code>State</code> variable with the value <code>United States</code>, the US Crude Rates variable (which is defined in this dataset Total drug poisoning deaths per 100,000 people) exists to compare the defined regions to the national rates.</p>
 </section>
 <section id="tools-used-for-data-exploration" class="level3">
 <h3 class="anchored" data-anchor-id="tools-used-for-data-exploration">Tools Used for Data Exploration</h3>
+<p>The use of the R software package <code>ggplot2</code>, the interactive package <code>plotly</code> on my website, and custom color palettes from <a href="https://r-graph-gallery.com/38-rcolorbrewers-palettes.html">R Color Brewer</a> and the package <code>paletteer</code> all helped extensively in displaying the following graphs to inform my project’s questions of interest.</p>
 </section>
 </section>
 </section>
 <section id="results" class="level1">
 <h1>Results</h1>
-<section id="average-drug-poisoning-death-rate-by-us-region-compared-to-the-national-average-1999-2016" class="level3">
-<h3 class="anchored" data-anchor-id="average-drug-poisoning-death-rate-by-us-region-compared-to-the-national-average-1999-2016">Average Drug Poisoning Death Rate by US Region Compared to the National Average (1999-2016)</h3>
 <div class="cell">
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
 <p><img src="Written-Report_files/figure-html/faceted plot-1.png" class="img-fluid figure-img" style="width:85.0%"></p>
-<figcaption>Faceted Line Plot by Region vs National</figcaption>
+<figcaption>Mean Drug Poisoning Death Rates - Regional and National (1999-2016)</figcaption>
 </figure>
 </div>
 </div>
 </div>
-</section>
-</section>
-<section id="analysis-for-graph-above" class="level1">
-<h1>Analysis for graph above</h1>
+<section id="figure-1-analysis" class="level3">
+<h3 class="anchored" data-anchor-id="figure-1-analysis">Figure 1 Analysis</h3>
+<p>This graph categorizes all 50 states and the District of Columbia into the four US regions: Midwest, Northeast, South, and West — each of them represented by the blue dashed lines, which will be used to properly assess the drug poisoning mortality rates of each region. These regions are compared to the national average crude death rates (per 100,000), which is visually represented by the red line. When ranking the steepness of linear slopes of each region’s linear slopes, the South US region has the second steepest slope, then the National mortality rate, then the Midwest, and lastly,finally the West. The faceted graphs visualizes the slopes clearly where its steepness can be compared separately. With this, we can can conclude that the <strong>Northeast region</strong> has had the <strong>greatest increase in mortality rates</strong>, as indicated by the steep slope of its line (large increase over a smaller period of time) as well as the magnitude of the mean death rate value. Magnitude in this case refers to how Northeast approaches 30 deaths per 100,000 at its peak in the year 2016, whereas each of the other regions’ peaks have lower values – West: 16.70, Midwest: 16.76, National: 19.7, South: 22.99 (Website: Interactive Figure 1).</p>
 <div class="cell">
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
 <p><img src="Written-Report_files/figure-html/plot 2- all-1.png" class="img-fluid figure-img" style="width:85.0%"></p>
-<figcaption>Line Plot of US Regions Compared to National Average Drug Mortality</figcaption>
-</figure>
-</div>
-</div>
-</div>
-<p>This graph categorizes all 50 states and the District of Columbia into the four US regions. With this, we can properly assess the mortality rates of each region and can conclude that the Northeast region has had the greatest increase in mortality rates, as indicated by the steep slope of its line (large increase over smaller period of time) as well as the magnitude of the mean death rate value (nearing 40 deaths per 100,000 at the peak in the year 2016). When ranking the steepness of linear slopes of each region, the South has the second steepest slope, then the National mortality rate, then the Midwest, and finally the West. The West region is ranked last in this ranking, though in the graph it has the third highest mortality rate of about 17 deaths per 100,000 persons, its slope plateaus around the year 2011-2012, and steadily rises as seen in the faceted line plot. (fix national data explanation)</p>
-<div class="cell">
-<div class="cell-output-display">
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="Written-Report_files/figure-html/Hispanic ethnicity-1.png" class="img-fluid figure-img" style="width:85.0%"></p>
-<figcaption>Line Plot with Dashed Regression Lines of Race/Ethnicity</figcaption>
-</figure>
-</div>
-</div>
-</div>
-<div class="cell">
-<div class="cell-output-display">
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="Written-Report_files/figure-html/Sex vs Crude-1.png" class="img-fluid figure-img" style="width:85.0%"></p>
-<figcaption>Faceted Barplot by Sex</figcaption>
+<figcaption>Mean Drug Poisoning Death Rate by Region and National (1999-2016)</figcaption>
 </figure>
 </div>
 </div>
 </div>
 </section>
+<section id="figure-2-analysis" class="level3">
+<h3 class="anchored" data-anchor-id="figure-2-analysis">Figure 2 Analysis</h3>
+<p>To further analyze these regions’ trends in drug poisoning mortality, a combined line plot can be used to discover each region’s drug mortality rates’ relationship to each other. At first glance, the national average is visually distinct in the middle of the data with a bold red line. Due to the proper use of the provided US Crude Rates variable, this line is an average of the four US regions and is appropriately centered within the data. While all regions included in this graph generally increase over time, more specific trends must be analyzed.</p>
+<p>From 1999 to 2016, the Midwest region consistently had the lowest average drug poisoning mortality rate, peaking in 2016 at 16.7 deaths per 100,000 people, matching the West’s peak. The South region began with the second-lowest rate in 1999 (5.36 deaths per 100,000) but experienced one of the sharpest increases, becoming the second highest by 2016. Key spikes in the South’s mortality occurred in 2005, 2009, and 2012, aligning with the three waves of the opioid epidemic. Meanwhile, the West initially led with the highest rate in 1999 (8.11 deaths per 100,000), but its trend plateaued after 2011, remaining relatively stable between 15.82 and 16.7 deaths per 100,000 (Website: Interactive Figure 1).</p>
+<p>The Northeast region mirrored the national average until 2012, when its death rate surged dramatically, reaching 13.6 deaths per 100,000 and then, intersecting the South and West regions by 2013, marking the third wave of the opioid epidemic. This region continues to rise by 2016, nearing 28 deaths per 100,000. This sharp rise underscores the epidemic’s disproportionate impact on the Northeast and highlights its vulnerability during this period. These trends reflect the evolving geographic dynamics of the crisis, with the Midwest remaining least affected, the South showing rapid growth, and the Northeast experiencing a late but severe escalation (Website: Interactive Figure 1).</p>
+<div class="cell">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="Written-Report_files/figure-html/Hispanic ethnicity-1.png" class="img-fluid figure-img" style="width:85.0%"></p>
+<figcaption>Mean Drug Poisoning Death Rates by Race/Ethnicity (1999-2016)</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="figure-3-analysis" class="level3">
+<h3 class="anchored" data-anchor-id="figure-3-analysis">Figure 3 Analysis</h3>
+<p>When analyzing the bar plot, the slope reflects the direction and strength of the relationship between race/ethnicity and drug poisoning mortality rates. The data for Hispanic, Non-Hispanic Black, and Non-Hispanic White populations all exhibit positive slopes, indicating increasing drug-related death rates over time, but the steepness of these slopes varies. Notably, the Non-Hispanic White population has the steepest slope, signifying the strongest association with drug mortality rates. This group’s mean crude death rate begins a significant rise around 2011, consistent with the timing of the opioid epidemic’s later waves. In contrast, the Hispanic population has the weakest association, with a slope closer to horizontal, indicating a relatively slower increase in drug-related mortality over the same period.</p>
+<p>The Non-Hispanic Black population shows a more complex trend, with an inflection point in 2006 marking a temporary peak followed by a decline. Between 2006 and 2012, this group’s mortality rate stabilized within a narrow range (7.94 to 9.17 deaths per 100,000), until 2012, when rates began to climb sharply. This pattern mirrors trends observed in other regions, such as the South and Northeast, where drug mortality rates increased dramatically starting in 2012. These findings highlight distinct patterns across racial and ethnic groups, emphasizing the disproportionate impact of the opioid crisis on Non-Hispanic Whites while signaling evolving trends for other populations (Website: Interactive Figure 2).</p>
+<div class="cell">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="Written-Report_files/figure-html/Sex vs Crude-1.png" class="img-fluid figure-img" style="width:85.0%"></p>
+<figcaption>Count of Total Drug Poisoning Deaths per Year by Sex (1999-2016)</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="figure-4-analysis" class="level3">
+<h3 class="anchored" data-anchor-id="figure-4-analysis">Figure 4 Analysis</h3>
+<p>This bar plot above is faceted by the data’s Sex variable, where the total count of drug poisoning deaths of both Male and Female sexes is seen on the left hand, gray bar plot, and each sex is assigned a color for specification (pink for Female, and blue for Male). From 1999 to 2016, drug poisoning deaths increased significantly across all sexes and age groups, with notable disparities. Males consistently experienced higher death counts than females, with their rise becoming especially steep after 2010. Females experienced a steadily increasing death rate with drug poisoning.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="Written-Report_files/figure-html/unnamed-chunk-1-1.png" class="img-fluid figure-img" style="width:85.0%"></p>
+<figcaption>Count of Total Drug Poisoning Deaths per Year by Age Group (1999-2016)</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="figure-5-analysis" class="level3">
+<h3 class="anchored" data-anchor-id="figure-5-analysis">Figure 5 Analysis</h3>
+<p>Among age groups, middle-aged individuals (25–54) saw the largest increases, particularly those aged 25–34 and 45–54, while older groups (55–64, 65–74, and 75+) experienced slower but steady growth. Younger groups (0–14 and 15–24) were less affected, though deaths in the 15–24 range began rising notably after 2005. These trends suggest that middle-aged males are the most affected demographic, requiring focused interventions, while the growing rates in younger and older populations indicate a broadening scope of the crisis.</p>
+<section id="younger-age-groups-014-1524" class="level4">
+<h4 class="anchored" data-anchor-id="younger-age-groups-014-1524">Younger Age Groups (0–14, 15–24):</h4>
+<p>The 0–14 age group has minimal drug poisoning deaths across all years, with no significant upward trend. The 15–24 age group shows a steady increase, especially after 2005, indicating growing involvement or vulnerability of this demographic.</p>
+</section>
+<section id="middle-age-groups-2534-3544-4554" class="level4">
+<h4 class="anchored" data-anchor-id="middle-age-groups-2534-3544-4554">Middle Age Groups (25–34, 35–44, 45–54):</h4>
+<p>These groups exhibit the steepest increases in total deaths, particularly 25–34 and 45–54, which display significant jumps post-2010.</p>
+</section>
+<section id="older-age-groups-5564-6574-75" class="level4">
+<h4 class="anchored" data-anchor-id="older-age-groups-5564-6574-75">Older Age Groups (55–64, 65–74, 75+):</h4>
+<p>Death counts also rise among older groups, particularly in the 55–64 range. The 65–74 and 75+ groups see less pronounced increases.</p>
+</section>
+</section>
+</section>
 <section id="conclusion" class="level1">
 <h1>Conclusion</h1>
-<p>The following graphs were created to visualize the numerical data of the average drug poisoning mortality rates in each US region and compare these rates to the national average. When considering the research question of interest, the US region that has the greatest increase in drug poisoning mortality in comparison to all US four regions and the national average was <strong>the Northeast region</strong>, clearly visualized by the second line plot graphing “Average Drug Poisoning Death Rate by US Region (1999-2016)”.</p>
-<section id="potential-factors-behind-observed-trends" class="level2">
-<h2 class="anchored" data-anchor-id="potential-factors-behind-observed-trends">Potential Factors Behind Observed Trends</h2>
-<p>Public health responses to the declaration of a national health emergency have affected populations, yet some regions of the United States may have more ease of accessing health care arising from policy like increased regulation of opioid prescriptions, efforts to expand access to treatment for opioid use disorder, and the distribution of naloxone — a life-saving medication that can reverse opioid overdoses. This may explain the plateau of the West region’s drug poisoning mortality rates, while Northeast and South rates continued to skyrocket – as these regions are politically more diverse and unlikely to resolve policy easily. Despite these efforts, drug poisoning deaths have continued to rise in the last decade, exacerbated by the increasing presence of synthetic opioids like fentanyl noted as the “third wave” of the opioid epidemic.</p>
-<p>The opioid crisis undoubtedly disproportionately affects certain demographics, with higher rates among middle-aged adults, non-Hispanic whites, and men. It would be worth exploring the correlation rates between these demographics, such as sex, Hispanic origin, and age, with the newfound knowledge gained from this data analysis of US regions and death mortality rates.</p>
+<p>This project’s findings highlight the evolving and disproportionate impacts of the opioid epidemic across U.S. regions, racial/ethnic groups, and demographics like sex and age. The Northeast region experienced the sharpest rise in drug poisoning mortality rates, surpassing all other regions by 2016 with nearly 28 deaths per 100,000 people, and emphasizing its vulnerability during the epidemic’s third wave. The South showed the second-highest increase, with significant spikes coinciding with key waves of the crisis. In contrast, the Midwest consistently had the lowest rates, while the West plateaued after 2011. Among racial groups, Non-Hispanic Whites exhibited the steepest rise in mortality, underscoring their heightened association with drug-related deaths. Non-Hispanic Blacks showed a more complex trend, with periods of stabilization, while Hispanics remained least affected. Across sex and age groups, males were disproportionately impacted, and middle-aged adults (25–54 years) experienced the steepest increases, although deaths among younger and older populations also grew.</p>
+<section id="public-health-challenges-and-targeted-interventions" class="level2">
+<h2 class="anchored" data-anchor-id="public-health-challenges-and-targeted-interventions">Public Health Challenges and Targeted Interventions</h2>
+<p>Public health responses to the declaration of a national health emergency have affected populations, yet some regions of the United States may have more ease of accessing health care arising from policy like increased regulation of opioid prescriptions, efforts to expand access to treatment for opioid use disorder, and the distribution of naloxone — a life-saving medication that can reverse opioid overdoses. Despite these efforts, drug poisoning deaths have continued to rise in the last decade, exacerbated by the increasing presence of synthetic opioids like fentanyl noted as the “third wave” of the opioid epidemic.</p>
+<p>These trends underscore a pressing public health crisis, requiring targeted interventions to address the most affected populations and regions. The opioid crisis undoubtedly disproportionately affects certain demographics, with higher rates among middle-aged adults, non-Hispanic whites, and men. Middle-aged males, particularly in the Northeast and South, are critical groups for prevention and treatment strategies. The increasing rates among younger (15–24) and older (55+) populations indicate the epidemic’s widening scope, necessitating broader outreach and education. Additionally, racial disparities point to the need for culturally sensitive approaches to mitigate drug-related mortality among Non-Hispanic Whites and emerging vulnerabilities in other groups. Focused, region-specific initiatives, along with enhanced surveillance and resource allocation, are vital to curbing the ongoing epidemic.</p>
 </section>
 </section>
 <section id="references" class="level1">

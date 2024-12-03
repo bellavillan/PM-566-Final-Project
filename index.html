@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.4.555">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Isabella Villanueva">
+
+<title>R Analytics: U.S. Drug Overdose Data - Understanding the Opioid Epidemic Through Data Science: A Regional and Demographic Analysis</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<script src="site_libs/quarto-html/quarto.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<link href="site_libs/htmltools-fill-0.5.8.1/fill.css" rel="stylesheet">
+<script src="site_libs/htmlwidgets-1.6.4/htmlwidgets.js"></script>
+<script src="site_libs/plotly-binding-4.10.4/plotly.js"></script>
+<script src="site_libs/typedarray-0.1/typedarray.min.js"></script>
+<script src="site_libs/jquery-3.5.1/jquery.min.js"></script>
+<link href="site_libs/crosstalk-1.2.1/css/crosstalk.min.css" rel="stylesheet">
+<script src="site_libs/crosstalk-1.2.1/js/crosstalk.min.js"></script>
+<link href="site_libs/plotly-htmlwidgets-css-2.11.1/plotly-htmlwidgets.css" rel="stylesheet">
+<script src="site_libs/plotly-main-2.11.1/plotly-latest.min.js"></script>
+
+
+<link rel="stylesheet" href="styles.css">
+</head>
+
+<body class="nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="./index.html">
+    <span class="navbar-title">R Analytics: U.S. Drug Overdose Data</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link active" href="./index.html" aria-current="page"> 
+<span class="menu-text">Home</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="./about.html"> 
+<span class="menu-text">About</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="./ref.html"> 
+<span class="menu-text">References</span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+          <div class="quarto-navbar-tools">
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#description" id="toc-description" class="nav-link active" data-scroll-target="#description">Description</a></li>
+  <li><a href="#link-to-download-written-report" id="toc-link-to-download-written-report" class="nav-link" data-scroll-target="#link-to-download-written-report">Link to Download Written Report</a></li>
+  <li><a href="#interactive-data-visualizations-evolving-trends-of-the-opioid-crisis" id="toc-interactive-data-visualizations-evolving-trends-of-the-opioid-crisis" class="nav-link" data-scroll-target="#interactive-data-visualizations-evolving-trends-of-the-opioid-crisis">Interactive Data Visualizations: Evolving Trends of the Opioid Crisis</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Understanding the Opioid Epidemic Through Data Science: A Regional and Demographic Analysis</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Isabella Villanueva </p>
+          </div>
+  </div>
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="description" class="level3">
+<h3 class="anchored" data-anchor-id="description">Description</h3>
+<p>Welcome to my data science portfolio, where I apply statistical and analytical skills to uncover critical insights into one of the most pressing public health crises in recent U.S. history. Using a comprehensive dataset from the Centers for Disease Control and Prevention (CDC) on drug overdose death rates (1999–2016), this project explores key questions about how drug mortality has evolved over time, the demographic factors at play, and regional disparities in the epidemic.</p>
+<p>Through interactive visualizations and in-depth analysis, you’ll discover:</p>
+<ol type="1">
+<li>Which regions of the U.S. have seen the sharpest increases in drug poisoning death rates over time.<br>
+</li>
+<li>Whether Hispanic origin is strongly associated with drug mortality across the nation.<br>
+</li>
+<li>How drug poisoning death rates differ between men and women in various U.S. regions.<br>
+</li>
+<li>Which age ranges see the most drug poisoning deaths?</li>
+</ol>
+<p>This project not only demonstrates the power of data in addressing real-world challenges but also serves as a foundation for my growing expertise in public health analytics. Dive deeper into the insights on the full project page!</p>
+</section>
+<section id="link-to-download-written-report" class="level3">
+<h3 class="anchored" data-anchor-id="link-to-download-written-report">Link to Download Written Report</h3>
+<p><a href="https://github.com/bellavillan/PM-566-Final-Project/blob/main/Written-Report.pdf">View the Full Analysis in My Written Report</a></p>
+</section>
+<section id="interactive-data-visualizations-evolving-trends-of-the-opioid-crisis" class="level2">
+<h2 class="anchored" data-anchor-id="interactive-data-visualizations-evolving-trends-of-the-opioid-crisis">Interactive Data Visualizations: Evolving Trends of the Opioid Crisis</h2>
+<p>These four compelling interactive plots will unravel the complexities of drug poisoning deaths across the United States from 1999 to 2016. These visualizations bring data to life, answering critical questions about regional trends, Hispanic origin and mortality, gender disparities, and age vulnerabilities.</p>
+<p>Through clear and engaging graphs, these interactive plots uncover hidden insights, challenge assumptions, and guide viewers toward a deeper understanding of one of the most pressing public health crises of our time.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div class="plotly html-widget html-fill-item" id="htmlwidget-ab96812defa3f1f5bff6" style="width:100%;height:464px;"></div>
+<script type="application/json" data-for="htmlwidget-ab96812defa3f1f5bff6">{"x":{"visdat":{"9f27637f3cef":["function () ","plotlyVisDat"],"9f273679a1f1":["function () ","data"],"9f276b76f127":["function () ","data"]},"cur_data":"9f276b76f127","attrs":{"9f273679a1f1":{"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"x":{},"y":{},"type":"scatter","mode":"lines","name":"National","line":{"color":"red","width":3},"hoverinfo":"text","text":{},"inherit":true},"9f276b76f127":{"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"x":{},"y":{},"type":"scatter","mode":"lines","color":{},"colors":["darkorange2","#8494FF","aquamarine3","#ED68ED","red"],"name":{},"line":{"color":["darkorange2","#8494FF","aquamarine3","#ED68ED","red"],"width":2},"hoverinfo":"text","text":{},"opacity":0.69999999999999996,"inherit":true}},"layout":{"margin":{"b":40,"l":60,"t":25,"r":10},"title":"Fig. 1: Mean Drug Poisoning Death Rate by Region and National (1999-2016)","xaxis":{"domain":[0,1],"automargin":true,"title":"Year"},"yaxis":{"domain":[0,1],"automargin":true,"title":"Mean Death Rate (Deaths per 100,000)"},"legend":{"title":{"text":"Region"}},"hovermode":"closest","showlegend":true},"source":"A","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"data":[{"x":[1999,2000,2001,2002,2003,2004,2005,2006,2007,2008,2009,2010,2011,2012,2013,2014,2015,2016],"y":[6.0381999999999998,6.1882000000000001,6.8056999999999999,8.1766000000000005,8.8880999999999997,9.3659999999999997,10.0884,11.5373,11.9543,11.9864,12.0624,12.414400000000001,13.2674,13.220800000000001,13.912699999999999,14.757400000000001,16.303999999999998,19.692499999999999],"type":"scatter","mode":"lines","name":"National","line":{"color":"red","width":3},"hoverinfo":["text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text"],"text":["Year: 1999 <br>Mean Rate: 6.0382 <br>Region: National","Year: 2000 <br>Mean Rate: 6.1882 <br>Region: National","Year: 2001 <br>Mean Rate: 6.8057 <br>Region: National","Year: 2002 <br>Mean Rate: 8.1766 <br>Region: National","Year: 2003 <br>Mean Rate: 8.8881 <br>Region: National","Year: 2004 <br>Mean Rate: 9.366 <br>Region: National","Year: 2005 <br>Mean Rate: 10.0884 <br>Region: National","Year: 2006 <br>Mean Rate: 11.5373 <br>Region: National","Year: 2007 <br>Mean Rate: 11.9543 <br>Region: National","Year: 2008 <br>Mean Rate: 11.9864 <br>Region: National","Year: 2009 <br>Mean Rate: 12.0624 <br>Region: National","Year: 2010 <br>Mean Rate: 12.4144 <br>Region: National","Year: 2011 <br>Mean Rate: 13.2674 <br>Region: National","Year: 2012 <br>Mean Rate: 13.2208 <br>Region: National","Year: 2013 <br>Mean Rate: 13.9127 <br>Region: National","Year: 2014 <br>Mean Rate: 14.7574 <br>Region: National","Year: 2015 <br>Mean Rate: 16.304 <br>Region: National","Year: 2016 <br>Mean Rate: 19.6925 <br>Region: National"],"marker":{"color":"rgba(31,119,180,1)","line":{"color":"rgba(31,119,180,1)"}},"error_y":{"color":"rgba(31,119,180,1)"},"error_x":{"color":"rgba(31,119,180,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":[1999,2000,2001,2002,2003,2004,2005,2006,2007,2008,2009,2010,2011,2012,2013,2014,2015,2016],"y":[3.4905166666666667,3.9697833333333334,4.7189583333333331,5.3844833333333337,5.7519749999999998,6.8120833333333337,7.4667583333333329,8.6933249999999997,8.9575916666666675,9.6438416666666669,9.7411416666666675,10.221583333333333,10.787583333333334,10.982741666666666,11.817741666666667,12.842325000000001,14.026516666666668,16.768291666666666],"type":"scatter","mode":"lines","name":"Midwest","line":{"color":["darkorange2","#8494FF","aquamarine3","#ED68ED","red"],"width":2},"hoverinfo":["text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text"],"text":["Year: 1999 <br>Mean Rate: 3.49051666666667 <br>Region: Midwest","Year: 2000 <br>Mean Rate: 3.96978333333333 <br>Region: Midwest","Year: 2001 <br>Mean Rate: 4.71895833333333 <br>Region: Midwest","Year: 2002 <br>Mean Rate: 5.38448333333333 <br>Region: Midwest","Year: 2003 <br>Mean Rate: 5.751975 <br>Region: Midwest","Year: 2004 <br>Mean Rate: 6.81208333333333 <br>Region: Midwest","Year: 2005 <br>Mean Rate: 7.46675833333333 <br>Region: Midwest","Year: 2006 <br>Mean Rate: 8.693325 <br>Region: Midwest","Year: 2007 <br>Mean Rate: 8.95759166666667 <br>Region: Midwest","Year: 2008 <br>Mean Rate: 9.64384166666667 <br>Region: Midwest","Year: 2009 <br>Mean Rate: 9.74114166666667 <br>Region: Midwest","Year: 2010 <br>Mean Rate: 10.2215833333333 <br>Region: Midwest","Year: 2011 <br>Mean Rate: 10.7875833333333 <br>Region: Midwest","Year: 2012 <br>Mean Rate: 10.9827416666667 <br>Region: Midwest","Year: 2013 <br>Mean Rate: 11.8177416666667 <br>Region: Midwest","Year: 2014 <br>Mean Rate: 12.842325 <br>Region: Midwest","Year: 2015 <br>Mean Rate: 14.0265166666667 <br>Region: Midwest","Year: 2016 <br>Mean Rate: 16.7682916666667 <br>Region: Midwest"],"opacity":0.69999999999999996,"marker":{"color":"rgba(102,194,165,1)","line":{"color":"rgba(102,194,165,1)"}},"textfont":{"color":"rgba(102,194,165,1)"},"error_y":{"color":"rgba(102,194,165,1)"},"error_x":{"color":"rgba(102,194,165,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":[1999,2000,2001,2002,2003,2004,2005,2006,2007,2008,2009,2010,2011,2012,2013,2014,2015,2016],"y":[6.3079777777777775,6.5677666666666665,7.9947999999999997,8.9824333333333328,10.04948888888889,9.0849777777777785,10.492266666666668,12.252322222222222,11.912911111111111,11.727555555555556,11.081477777777778,11.407744444444445,13.630877777777778,13.606122222222222,15.979666666666667,17.947800000000001,22.266966666666669,27.874033333333333],"type":"scatter","mode":"lines","name":"Northeast","line":{"color":["darkorange2","#8494FF","aquamarine3","#ED68ED","red"],"width":2},"hoverinfo":["text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text"],"text":["Year: 1999 <br>Mean Rate: 6.30797777777778 <br>Region: Northeast","Year: 2000 <br>Mean Rate: 6.56776666666667 <br>Region: Northeast","Year: 2001 <br>Mean Rate: 7.9948 <br>Region: Northeast","Year: 2002 <br>Mean Rate: 8.98243333333333 <br>Region: Northeast","Year: 2003 <br>Mean Rate: 10.0494888888889 <br>Region: Northeast","Year: 2004 <br>Mean Rate: 9.08497777777778 <br>Region: Northeast","Year: 2005 <br>Mean Rate: 10.4922666666667 <br>Region: Northeast","Year: 2006 <br>Mean Rate: 12.2523222222222 <br>Region: Northeast","Year: 2007 <br>Mean Rate: 11.9129111111111 <br>Region: Northeast","Year: 2008 <br>Mean Rate: 11.7275555555556 <br>Region: Northeast","Year: 2009 <br>Mean Rate: 11.0814777777778 <br>Region: Northeast","Year: 2010 <br>Mean Rate: 11.4077444444444 <br>Region: Northeast","Year: 2011 <br>Mean Rate: 13.6308777777778 <br>Region: Northeast","Year: 2012 <br>Mean Rate: 13.6061222222222 <br>Region: Northeast","Year: 2013 <br>Mean Rate: 15.9796666666667 <br>Region: Northeast","Year: 2014 <br>Mean Rate: 17.9478 <br>Region: Northeast","Year: 2015 <br>Mean Rate: 22.2669666666667 <br>Region: Northeast","Year: 2016 <br>Mean Rate: 27.8740333333333 <br>Region: Northeast"],"opacity":0.69999999999999996,"marker":{"color":"rgba(252,141,98,1)","line":{"color":"rgba(252,141,98,1)"}},"textfont":{"color":"rgba(252,141,98,1)"},"error_y":{"color":"rgba(252,141,98,1)"},"error_x":{"color":"rgba(252,141,98,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":[1999,2000,2001,2002,2003,2004,2005,2006,2007,2008,2009,2010,2011,2012,2013,2014,2015,2016],"y":[5.3641411764705884,6.6046823529411762,7.9285411764705884,8.4766411764705882,10.185811764705882,10.666011764705882,10.821623529411765,13.017511764705883,13.297982352941176,13.413235294117648,12.877694117647058,14.404329411764706,15.109870588235294,14.66139411764706,15.39234705882353,16.469594117647059,18.218711764705883,22.994276470588236],"type":"scatter","mode":"lines","name":"South","line":{"color":["darkorange2","#8494FF","aquamarine3","#ED68ED","red"],"width":2},"hoverinfo":["text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text"],"text":["Year: 1999 <br>Mean Rate: 5.36414117647059 <br>Region: South","Year: 2000 <br>Mean Rate: 6.60468235294118 <br>Region: South","Year: 2001 <br>Mean Rate: 7.92854117647059 <br>Region: South","Year: 2002 <br>Mean Rate: 8.47664117647059 <br>Region: South","Year: 2003 <br>Mean Rate: 10.1858117647059 <br>Region: South","Year: 2004 <br>Mean Rate: 10.6660117647059 <br>Region: South","Year: 2005 <br>Mean Rate: 10.8216235294118 <br>Region: South","Year: 2006 <br>Mean Rate: 13.0175117647059 <br>Region: South","Year: 2007 <br>Mean Rate: 13.2979823529412 <br>Region: South","Year: 2008 <br>Mean Rate: 13.4132352941176 <br>Region: South","Year: 2009 <br>Mean Rate: 12.8776941176471 <br>Region: South","Year: 2010 <br>Mean Rate: 14.4043294117647 <br>Region: South","Year: 2011 <br>Mean Rate: 15.1098705882353 <br>Region: South","Year: 2012 <br>Mean Rate: 14.6613941176471 <br>Region: South","Year: 2013 <br>Mean Rate: 15.3923470588235 <br>Region: South","Year: 2014 <br>Mean Rate: 16.4695941176471 <br>Region: South","Year: 2015 <br>Mean Rate: 18.2187117647059 <br>Region: South","Year: 2016 <br>Mean Rate: 22.9942764705882 <br>Region: South"],"opacity":0.69999999999999996,"marker":{"color":"rgba(141,160,203,1)","line":{"color":"rgba(141,160,203,1)"}},"textfont":{"color":"rgba(141,160,203,1)"},"error_y":{"color":"rgba(141,160,203,1)"},"error_x":{"color":"rgba(141,160,203,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":[1999,2000,2001,2002,2003,2004,2005,2006,2007,2008,2009,2010,2011,2012,2013,2014,2015,2016],"y":[8.1104615384615393,8.0282,8.3370846153846152,10.448915384615384,11.26773076923077,11.689484615384615,12.336107692307692,13.026076923076923,14.282507692307693,14.911361538461538,14.979084615384615,14.558046153846155,16.026476923076924,15.818546153846153,15.748253846153846,16.237346153846154,16.347569230769231,16.701592307692309],"type":"scatter","mode":"lines","name":"West","line":{"color":["darkorange2","#8494FF","aquamarine3","#ED68ED","red"],"width":2},"hoverinfo":["text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text"],"text":["Year: 1999 <br>Mean Rate: 8.11046153846154 <br>Region: West","Year: 2000 <br>Mean Rate: 8.0282 <br>Region: West","Year: 2001 <br>Mean Rate: 8.33708461538462 <br>Region: West","Year: 2002 <br>Mean Rate: 10.4489153846154 <br>Region: West","Year: 2003 <br>Mean Rate: 11.2677307692308 <br>Region: West","Year: 2004 <br>Mean Rate: 11.6894846153846 <br>Region: West","Year: 2005 <br>Mean Rate: 12.3361076923077 <br>Region: West","Year: 2006 <br>Mean Rate: 13.0260769230769 <br>Region: West","Year: 2007 <br>Mean Rate: 14.2825076923077 <br>Region: West","Year: 2008 <br>Mean Rate: 14.9113615384615 <br>Region: West","Year: 2009 <br>Mean Rate: 14.9790846153846 <br>Region: West","Year: 2010 <br>Mean Rate: 14.5580461538462 <br>Region: West","Year: 2011 <br>Mean Rate: 16.0264769230769 <br>Region: West","Year: 2012 <br>Mean Rate: 15.8185461538462 <br>Region: West","Year: 2013 <br>Mean Rate: 15.7482538461538 <br>Region: West","Year: 2014 <br>Mean Rate: 16.2373461538462 <br>Region: West","Year: 2015 <br>Mean Rate: 16.3475692307692 <br>Region: West","Year: 2016 <br>Mean Rate: 16.7015923076923 <br>Region: West"],"opacity":0.69999999999999996,"marker":{"color":"rgba(231,138,195,1)","line":{"color":"rgba(231,138,195,1)"}},"textfont":{"color":"rgba(231,138,195,1)"},"error_y":{"color":"rgba(231,138,195,1)"},"error_x":{"color":"rgba(231,138,195,1)"},"xaxis":"x","yaxis":"y","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.20000000000000001,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+</div>
+</div>
+<p><strong>Figure 1 Description:</strong> This graph shows drug poisoning death rates (per 100,000) from 1999 to 2016 across U.S. regions compared to the national average (red line). The Northeast sees the sharpest rise, peaking near 28 deaths by 2016, while the South follows as the second-highest. The Midwest remains the lowest, and the West plateaus after an initial increase. This highlights regional disparities in the opioid epidemic’s impact.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div class="plotly html-widget html-fill-item" id="htmlwidget-654105229b999dbde1b1" style="width:100%;height:464px;"></div>
+<script type="application/json" data-for="htmlwidget-654105229b999dbde1b1">{"x":{"visdat":{"9f2732589633":["function () ","plotlyVisDat"]},"cur_data":"9f2732589633","attrs":{"9f2732589633":{"x":{},"y":{},"mode":"lines+markers","text":{},"hoverinfo":"text","color":{},"colors":"Set2","alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"scatter"}},"layout":{"margin":{"b":40,"l":60,"t":25,"r":10},"title":"Fig. 2: Association Between Race/Hispanic Origin and Drug Mortality (1999-2016)","xaxis":{"domain":[0,1],"automargin":true,"title":"Year"},"yaxis":{"domain":[0,1],"automargin":true,"title":"Mean Crude Death Rate (per 100,000)"},"hovermode":"closest","showlegend":true},"source":"A","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"data":[{"x":[1999,2000,2001,2002,2003,2004,2005,2006,2007,2008,2009,2010,2011,2012,2013,2014,2015,2016],"y":[5.8852370370370375,6.2417999999999996,7.0423148148148149,8.6989666666666672,9.6358296296296295,10.401251851851852,11.189462962962963,12.920922222222222,13.874962962962963,14.259718518518518,14.479155555555556,15.170051851851852,16.290503703703703,16.286292592592591,17.186540740740739,18.390392592592594,20.277818518518519,24.11577037037037],"mode":"lines+markers","text":["Year: 1999 <br>Rate: 5.88523703703704","Year: 2000 <br>Rate: 6.2418","Year: 2001 <br>Rate: 7.04231481481481","Year: 2002 <br>Rate: 8.69896666666667","Year: 2003 <br>Rate: 9.63582962962963","Year: 2004 <br>Rate: 10.4012518518519","Year: 2005 <br>Rate: 11.189462962963","Year: 2006 <br>Rate: 12.9209222222222","Year: 2007 <br>Rate: 13.874962962963","Year: 2008 <br>Rate: 14.2597185185185","Year: 2009 <br>Rate: 14.4791555555556","Year: 2010 <br>Rate: 15.1700518518519","Year: 2011 <br>Rate: 16.2905037037037","Year: 2012 <br>Rate: 16.2862925925926","Year: 2013 <br>Rate: 17.1865407407407","Year: 2014 <br>Rate: 18.3903925925926","Year: 2015 <br>Rate: 20.2778185185185","Year: 2016 <br>Rate: 24.1157703703704"],"hoverinfo":["text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text"],"type":"scatter","name":"Non-Hispanic White","marker":{"color":"rgba(102,194,165,1)","line":{"color":"rgba(102,194,165,1)"}},"textfont":{"color":"rgba(102,194,165,1)"},"error_y":{"color":"rgba(102,194,165,1)"},"error_x":{"color":"rgba(102,194,165,1)"},"line":{"color":"rgba(102,194,165,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":[1999,2000,2001,2002,2003,2004,2005,2006,2007,2008,2009,2010,2011,2012,2013,2014,2015,2016],"y":[7.2360296296296296,7.053811111111111,7.3427481481481482,7.9483444444444444,8.053700000000001,8.2220407407407414,9.3050111111111118,10.814066666666667,9.871614814814814,8.6662518518518521,8.5409666666666659,8.4280555555555559,8.945774074074075,9.1782148148148153,10.332140740740741,11.151396296296296,12.941551851851852,18.143255555555555],"mode":"lines+markers","text":["Year: 1999 <br>Rate: 7.23602962962963","Year: 2000 <br>Rate: 7.05381111111111","Year: 2001 <br>Rate: 7.34274814814815","Year: 2002 <br>Rate: 7.94834444444444","Year: 2003 <br>Rate: 8.0537","Year: 2004 <br>Rate: 8.22204074074074","Year: 2005 <br>Rate: 9.30501111111111","Year: 2006 <br>Rate: 10.8140666666667","Year: 2007 <br>Rate: 9.87161481481481","Year: 2008 <br>Rate: 8.66625185185185","Year: 2009 <br>Rate: 8.54096666666667","Year: 2010 <br>Rate: 8.42805555555556","Year: 2011 <br>Rate: 8.94577407407407","Year: 2012 <br>Rate: 9.17821481481482","Year: 2013 <br>Rate: 10.3321407407407","Year: 2014 <br>Rate: 11.1513962962963","Year: 2015 <br>Rate: 12.9415518518519","Year: 2016 <br>Rate: 18.1432555555556"],"hoverinfo":["text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text"],"type":"scatter","name":"Non-Hispanic Black","marker":{"color":"rgba(252,141,98,1)","line":{"color":"rgba(252,141,98,1)"}},"textfont":{"color":"rgba(252,141,98,1)"},"error_y":{"color":"rgba(252,141,98,1)"},"error_x":{"color":"rgba(252,141,98,1)"},"line":{"color":"rgba(252,141,98,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":[1999,2000,2001,2002,2003,2004,2005,2006,2007,2008,2009,2010,2011,2012,2013,2014,2015,2016],"y":[5.0512925925925929,4.2727370370370377,4.2017592592592594,5.1159777777777782,5.3953740740740743,5.1183592592592593,5.5956074074074076,6.1001666666666665,5.7465814814814813,5.7562555555555557,5.8180074074074071,5.6431851851851853,6.0510111111111113,6.2681222222222219,6.7122777777777776,6.7613074074074078,7.6657370370370375,9.2878074074074064],"mode":"lines+markers","text":["Year: 1999 <br>Rate: 5.05129259259259","Year: 2000 <br>Rate: 4.27273703703704","Year: 2001 <br>Rate: 4.20175925925926","Year: 2002 <br>Rate: 5.11597777777778","Year: 2003 <br>Rate: 5.39537407407407","Year: 2004 <br>Rate: 5.11835925925926","Year: 2005 <br>Rate: 5.59560740740741","Year: 2006 <br>Rate: 6.10016666666667","Year: 2007 <br>Rate: 5.74658148148148","Year: 2008 <br>Rate: 5.75625555555556","Year: 2009 <br>Rate: 5.81800740740741","Year: 2010 <br>Rate: 5.64318518518519","Year: 2011 <br>Rate: 6.05101111111111","Year: 2012 <br>Rate: 6.26812222222222","Year: 2013 <br>Rate: 6.71227777777778","Year: 2014 <br>Rate: 6.76130740740741","Year: 2015 <br>Rate: 7.66573703703704","Year: 2016 <br>Rate: 9.28780740740741"],"hoverinfo":["text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text"],"type":"scatter","name":"Hispanic","marker":{"color":"rgba(141,160,203,1)","line":{"color":"rgba(141,160,203,1)"}},"textfont":{"color":"rgba(141,160,203,1)"},"error_y":{"color":"rgba(141,160,203,1)"},"error_x":{"color":"rgba(141,160,203,1)"},"line":{"color":"rgba(141,160,203,1)"},"xaxis":"x","yaxis":"y","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.20000000000000001,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+</div>
+</div>
+<p><strong>Figure 2 Description:</strong> This line chart shows the association between race/ethnicity and drug-related mortality rates from 1999 to 2016, highlighting trends for Hispanic, Non-Hispanic Black, and Non-Hispanic White populations. Non-Hispanic Whites experienced the steepest increase in mortality, while Hispanics experiences the least steep increase.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div class="plotly html-widget html-fill-item" id="htmlwidget-84f7dc0ac16af03ff9bd" style="width:100%;height:464px;"></div>
+<script type="application/json" data-for="htmlwidget-84f7dc0ac16af03ff9bd">{"x":{"data":[{"orientation":"v","width":[0.90000000000009095,0.90000000000009095,0.90000000000009095,0.90000000000009095,0.90000000000009095,0.90000000000009095,0.90000000000009095,0.90000000000009095,0.90000000000009095,0.90000000000009095,0.90000000000009095,0.90000000000009095,0.90000000000009095,0.90000000000009095,0.90000000000009095,0.90000000000009095,0.90000000000009095,0.90000000000009095],"base":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],"x":[1999,2000,2001,2002,2003,2004,2005,2006,2007,2008,2009,2010,2011,2012,2013,2014,2015,2016],"y":[83374,86236,96063,116580,127750,135919,147721,170663,178579,180644,183128,189812,204585,205235,217645,232700,259018,314693],"text":["Year: 1999 <br>Sex: Both Sexes <br>Total Deaths: 83374","Year: 2000 <br>Sex: Both Sexes <br>Total Deaths: 86236","Year: 2001 <br>Sex: Both Sexes <br>Total Deaths: 96063","Year: 2002 <br>Sex: Both Sexes <br>Total Deaths: 116580","Year: 2003 <br>Sex: Both Sexes <br>Total Deaths: 127750","Year: 2004 <br>Sex: Both Sexes <br>Total Deaths: 135919","Year: 2005 <br>Sex: Both Sexes <br>Total Deaths: 147721","Year: 2006 <br>Sex: Both Sexes <br>Total Deaths: 170663","Year: 2007 <br>Sex: Both Sexes <br>Total Deaths: 178579","Year: 2008 <br>Sex: Both Sexes <br>Total Deaths: 180644","Year: 2009 <br>Sex: Both Sexes <br>Total Deaths: 183128","Year: 2010 <br>Sex: Both Sexes <br>Total Deaths: 189812","Year: 2011 <br>Sex: Both Sexes <br>Total Deaths: 204585","Year: 2012 <br>Sex: Both Sexes <br>Total Deaths: 205235","Year: 2013 <br>Sex: Both Sexes <br>Total Deaths: 217645","Year: 2014 <br>Sex: Both Sexes <br>Total Deaths: 232700","Year: 2015 <br>Sex: Both Sexes <br>Total Deaths: 259018","Year: 2016 <br>Sex: Both Sexes <br>Total Deaths: 314693"],"type":"bar","textposition":"none","marker":{"autocolorscale":false,"color":"rgba(127,127,127,1)","line":{"width":1.8897637795275593,"color":"transparent"}},"name":"Both Sexes","legendgroup":"Both Sexes","showlegend":true,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null},{"orientation":"v","width":[0.90000000000009095,0.90000000000009095,0.90000000000009095,0.90000000000009095,0.90000000000009095,0.90000000000009095,0.90000000000009095,0.90000000000009095,0.90000000000009095,0.90000000000009095,0.90000000000009095,0.90000000000009095,0.90000000000009095,0.90000000000009095,0.90000000000009095,0.90000000000009095,0.90000000000009095,0.90000000000009095],"base":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],"x":[1999,2000,2001,2002,2003,2004,2005,2006,2007,2008,2009,2010,2011,2012,2013,2014,2015,2016],"y":[22036,23122,26640,33587,37096,40752,43832,49584,54168,55305,56932,60559,64577,64664,67843,71992,76799,87112],"text":["Year: 1999 <br>Sex: Female <br>Total Deaths: 22036","Year: 2000 <br>Sex: Female <br>Total Deaths: 23122","Year: 2001 <br>Sex: Female <br>Total Deaths: 26640","Year: 2002 <br>Sex: Female <br>Total Deaths: 33587","Year: 2003 <br>Sex: Female <br>Total Deaths: 37096","Year: 2004 <br>Sex: Female <br>Total Deaths: 40752","Year: 2005 <br>Sex: Female <br>Total Deaths: 43832","Year: 2006 <br>Sex: Female <br>Total Deaths: 49584","Year: 2007 <br>Sex: Female <br>Total Deaths: 54168","Year: 2008 <br>Sex: Female <br>Total Deaths: 55305","Year: 2009 <br>Sex: Female <br>Total Deaths: 56932","Year: 2010 <br>Sex: Female <br>Total Deaths: 60559","Year: 2011 <br>Sex: Female <br>Total Deaths: 64577","Year: 2012 <br>Sex: Female <br>Total Deaths: 64664","Year: 2013 <br>Sex: Female <br>Total Deaths: 67843","Year: 2014 <br>Sex: Female <br>Total Deaths: 71992","Year: 2015 <br>Sex: Female <br>Total Deaths: 76799","Year: 2016 <br>Sex: Female <br>Total Deaths: 87112"],"type":"bar","textposition":"none","marker":{"autocolorscale":false,"color":"rgba(255,192,203,1)","line":{"width":1.8897637795275593,"color":"transparent"}},"name":"Female","legendgroup":"Female","showlegend":true,"xaxis":"x2","yaxis":"y","hoverinfo":"text","frame":null},{"orientation":"v","width":[0.90000000000009095,0.90000000000009095,0.90000000000009095,0.90000000000009095,0.90000000000009095,0.90000000000009095,0.90000000000009095,0.90000000000009095,0.90000000000009095,0.90000000000009095,0.90000000000009095,0.90000000000009095,0.90000000000009095,0.90000000000009095,0.90000000000009095,0.90000000000009095,0.90000000000009095,0.90000000000009095],"base":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],"x":[1999,2000,2001,2002,2003,2004,2005,2006,2007,2008,2009,2010,2011,2012,2013,2014,2015,2016],"y":[44489,45699,50029,59475,64869,67743,74076,86654,88401,88889,89192,90924,98668,99069,105820,113653,129815,163949],"text":["Year: 1999 <br>Sex: Male <br>Total Deaths: 44489","Year: 2000 <br>Sex: Male <br>Total Deaths: 45699","Year: 2001 <br>Sex: Male <br>Total Deaths: 50029","Year: 2002 <br>Sex: Male <br>Total Deaths: 59475","Year: 2003 <br>Sex: Male <br>Total Deaths: 64869","Year: 2004 <br>Sex: Male <br>Total Deaths: 67743","Year: 2005 <br>Sex: Male <br>Total Deaths: 74076","Year: 2006 <br>Sex: Male <br>Total Deaths: 86654","Year: 2007 <br>Sex: Male <br>Total Deaths: 88401","Year: 2008 <br>Sex: Male <br>Total Deaths: 88889","Year: 2009 <br>Sex: Male <br>Total Deaths: 89192","Year: 2010 <br>Sex: Male <br>Total Deaths: 90924","Year: 2011 <br>Sex: Male <br>Total Deaths: 98668","Year: 2012 <br>Sex: Male <br>Total Deaths: 99069","Year: 2013 <br>Sex: Male <br>Total Deaths: 105820","Year: 2014 <br>Sex: Male <br>Total Deaths: 113653","Year: 2015 <br>Sex: Male <br>Total Deaths: 129815","Year: 2016 <br>Sex: Male <br>Total Deaths: 163949"],"type":"bar","textposition":"none","marker":{"autocolorscale":false,"color":"rgba(135,206,235,1)","line":{"width":1.8897637795275593,"color":"transparent"}},"name":"Male","legendgroup":"Male","showlegend":true,"xaxis":"x3","yaxis":"y","hoverinfo":"text","frame":null}],"layout":{"margin":{"t":55.452054794520549,"r":7.3059360730593621,"b":40.182648401826498,"l":66.484018264840202},"font":{"color":"rgba(0,0,0,1)","family":"","size":14.611872146118724},"title":{"text":"Fig. 3: Total Count Drug Poisoning Deaths by Sex (1999-2016)","font":{"color":"rgba(0,0,0,1)","family":"","size":17.534246575342465},"x":0,"xref":"paper"},"xaxis":{"domain":[0,0.32246140465318546],"automargin":true,"type":"linear","autorange":false,"range":[1997.655,2017.345],"tickmode":"array","ticktext":["2000","2005","2010","2015"],"tickvals":[2000,2005,2010,2015],"categoryorder":"array","categoryarray":["2000","2005","2010","2015"],"nticks":null,"ticks":"","tickcolor":null,"ticklen":3.6529680365296811,"tickwidth":0,"showticklabels":true,"tickfont":{"color":"rgba(77,77,77,1)","family":"","size":11.68949771689498},"tickangle":-0,"showline":false,"linecolor":null,"linewidth":0,"showgrid":true,"gridcolor":"rgba(235,235,235,1)","gridwidth":0.66417600664176002,"zeroline":false,"anchor":"y","title":"","hoverformat":".2f"},"annotations":[{"text":"Year","x":0.5,"y":0,"showarrow":false,"ax":0,"ay":0,"font":{"color":"rgba(0,0,0,1)","family":"","size":14.611872146118724},"xref":"paper","yref":"paper","textangle":-0,"xanchor":"center","yanchor":"top","annotationType":"axis","yshift":-21.917808219178081},{"text":"Total Drug Poisoning Deaths","x":0,"y":0.5,"showarrow":false,"ax":0,"ay":0,"font":{"color":"rgba(0,0,0,1)","family":"","size":14.611872146118724},"xref":"paper","yref":"paper","textangle":-90,"xanchor":"right","yanchor":"center","annotationType":"axis","xshift":-51.14155251141554},{"text":"Both Sexes","x":0.16123070232659273,"y":1,"showarrow":false,"ax":0,"ay":0,"font":{"color":"rgba(26,26,26,1)","family":"","size":11.68949771689498},"xref":"paper","yref":"paper","textangle":-0,"xanchor":"center","yanchor":"bottom"},{"text":"Female","x":0.5,"y":1,"showarrow":false,"ax":0,"ay":0,"font":{"color":"rgba(26,26,26,1)","family":"","size":11.68949771689498},"xref":"paper","yref":"paper","textangle":-0,"xanchor":"center","yanchor":"bottom"},{"text":"Male","x":0.83876929767340724,"y":1,"showarrow":false,"ax":0,"ay":0,"font":{"color":"rgba(26,26,26,1)","family":"","size":11.68949771689498},"xref":"paper","yref":"paper","textangle":-0,"xanchor":"center","yanchor":"bottom"}],"yaxis":{"domain":[0,1],"automargin":true,"type":"linear","autorange":false,"range":[-15734.650000000001,330427.65000000002],"tickmode":"array","ticktext":["0","100,000","200,000","300,000"],"tickvals":[1.8189894035458565e-12,100000,200000,300000],"categoryorder":"array","categoryarray":["0","100,000","200,000","300,000"],"nticks":null,"ticks":"","tickcolor":null,"ticklen":3.6529680365296811,"tickwidth":0,"showticklabels":true,"tickfont":{"color":"rgba(77,77,77,1)","family":"","size":11.68949771689498},"tickangle":-0,"showline":false,"linecolor":null,"linewidth":0,"showgrid":true,"gridcolor":"rgba(235,235,235,1)","gridwidth":0.66417600664176002,"zeroline":false,"anchor":"x","title":"","hoverformat":".2f"},"shapes":[{"type":"rect","fillcolor":null,"line":{"color":null,"width":0,"linetype":[]},"yref":"paper","xref":"paper","x0":0,"x1":0.32246140465318546,"y0":0,"y1":1},{"type":"rect","fillcolor":null,"line":{"color":null,"width":0,"linetype":[]},"yref":"paper","xref":"paper","x0":0,"x1":0.32246140465318546,"y0":0,"y1":23.37899543378996,"yanchor":1,"ysizemode":"pixel"},{"type":"rect","fillcolor":null,"line":{"color":null,"width":0,"linetype":[]},"yref":"paper","xref":"paper","x0":0.34420526201348117,"x1":0.65579473798651877,"y0":0,"y1":1},{"type":"rect","fillcolor":null,"line":{"color":null,"width":0,"linetype":[]},"yref":"paper","xref":"paper","x0":0.34420526201348117,"x1":0.65579473798651877,"y0":0,"y1":23.37899543378996,"yanchor":1,"ysizemode":"pixel"},{"type":"rect","fillcolor":null,"line":{"color":null,"width":0,"linetype":[]},"yref":"paper","xref":"paper","x0":0.67753859534681449,"x1":1,"y0":0,"y1":1},{"type":"rect","fillcolor":null,"line":{"color":null,"width":0,"linetype":[]},"yref":"paper","xref":"paper","x0":0.67753859534681449,"x1":1,"y0":0,"y1":23.37899543378996,"yanchor":1,"ysizemode":"pixel"}],"xaxis2":{"type":"linear","autorange":false,"range":[1997.655,2017.345],"tickmode":"array","ticktext":["2000","2005","2010","2015"],"tickvals":[2000,2005,2010,2015],"categoryorder":"array","categoryarray":["2000","2005","2010","2015"],"nticks":null,"ticks":"","tickcolor":null,"ticklen":3.6529680365296811,"tickwidth":0,"showticklabels":true,"tickfont":{"color":"rgba(77,77,77,1)","family":"","size":11.68949771689498},"tickangle":-0,"showline":false,"linecolor":null,"linewidth":0,"showgrid":true,"domain":[0.34420526201348117,0.65579473798651877],"gridcolor":"rgba(235,235,235,1)","gridwidth":0.66417600664176002,"zeroline":false,"anchor":"y","title":"","hoverformat":".2f"},"xaxis3":{"type":"linear","autorange":false,"range":[1997.655,2017.345],"tickmode":"array","ticktext":["2000","2005","2010","2015"],"tickvals":[2000,2005,2010,2015],"categoryorder":"array","categoryarray":["2000","2005","2010","2015"],"nticks":null,"ticks":"","tickcolor":null,"ticklen":3.6529680365296811,"tickwidth":0,"showticklabels":true,"tickfont":{"color":"rgba(77,77,77,1)","family":"","size":11.68949771689498},"tickangle":-0,"showline":false,"linecolor":null,"linewidth":0,"showgrid":true,"domain":[0.67753859534681449,1],"gridcolor":"rgba(235,235,235,1)","gridwidth":0.66417600664176002,"zeroline":false,"anchor":"y","title":"","hoverformat":".2f"},"showlegend":true,"legend":{"bgcolor":null,"bordercolor":null,"borderwidth":0,"font":{"color":"rgba(0,0,0,1)","family":"","size":11.68949771689498},"title":{"text":"Sex","font":{"color":"rgba(0,0,0,1)","family":"","size":14.611872146118724}}},"hovermode":"closest","barmode":"relative"},"config":{"doubleClick":"reset","modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"source":"A","attrs":{"9f2740b9627a":{"x":{},"y":{},"fill":{},"text":{},"type":"bar"}},"cur_data":"9f2740b9627a","visdat":{"9f2740b9627a":["function (y) ","x"]},"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.20000000000000001,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+</div>
+</div>
+<p><strong>Figure 3 Description:</strong> This bar chart illustrates the total number of drug poisoning deaths from 1999 to 2016, broken down by sex (Both Sexes, Female, Male). The data highlights a steady increase in deaths over time, with males consistently having higher counts.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div class="plotly html-widget html-fill-item" id="htmlwidget-586ef7bf350672a898d5" style="width:100%;height:464px;"></div>
+<script type="application/json" data-for="htmlwidget-586ef7bf350672a898d5">{"x":{"data":[{"orientation":"v","width":[0.90000000000009095,0.90000000000009095,0.90000000000009095,0.90000000000009095,0.90000000000009095,0.90000000000009095,0.90000000000009095,0.90000000000009095,0.90000000000009095,0.90000000000009095,0.90000000000009095,0.90000000000009095,0.90000000000009095,0.90000000000009095,0.90000000000009095,0.90000000000009095,0.90000000000009095,0.90000000000009095],"base":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],"x":[1999,2000,2001,2002,2003,2004,2005,2006,2007,2008,2009,2010,2011,2012,2013,2014,2015,2016],"y":[294,282,358,378,398,458,440,536,586,516,454,500,420,448,414,424,562,560],"text":["Year: 1999 <br>Age Group: 0–14 <br>Total Deaths: 294","Year: 2000 <br>Age Group: 0–14 <br>Total Deaths: 282","Year: 2001 <br>Age Group: 0–14 <br>Total Deaths: 358","Year: 2002 <br>Age Group: 0–14 <br>Total Deaths: 378","Year: 2003 <br>Age Group: 0–14 <br>Total Deaths: 398","Year: 2004 <br>Age Group: 0–14 <br>Total Deaths: 458","Year: 2005 <br>Age Group: 0–14 <br>Total Deaths: 440","Year: 2006 <br>Age Group: 0–14 <br>Total Deaths: 536","Year: 2007 <br>Age Group: 0–14 <br>Total Deaths: 586","Year: 2008 <br>Age Group: 0–14 <br>Total Deaths: 516","Year: 2009 <br>Age Group: 0–14 <br>Total Deaths: 454","Year: 2010 <br>Age Group: 0–14 <br>Total Deaths: 500","Year: 2011 <br>Age Group: 0–14 <br>Total Deaths: 420","Year: 2012 <br>Age Group: 0–14 <br>Total Deaths: 448","Year: 2013 <br>Age Group: 0–14 <br>Total Deaths: 414","Year: 2014 <br>Age Group: 0–14 <br>Total Deaths: 424","Year: 2015 <br>Age Group: 0–14 <br>Total Deaths: 562","Year: 2016 <br>Age Group: 0–14 <br>Total Deaths: 560"],"type":"bar","textposition":"none","marker":{"autocolorscale":false,"color":"rgba(177,97,92,1)","line":{"width":1.8897637795275593,"color":"transparent"}},"name":"0–14","legendgroup":"0–14","showlegend":true,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null},{"orientation":"v","width":[0.90000000000009095,0.90000000000009095,0.90000000000009095,0.90000000000009095,0.90000000000009095,0.90000000000009095,0.90000000000009095,0.90000000000009095,0.90000000000009095,0.90000000000009095,0.90000000000009095,0.90000000000009095,0.90000000000009095,0.90000000000009095,0.90000000000009095,0.90000000000009095,0.90000000000009095,0.90000000000009095],"base":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],"x":[1999,2000,2001,2002,2003,2004,2005,2006,2007,2008,2009,2010,2011,2012,2013,2014,2015,2016],"y":[4890,5664,6696,8282,9860,10886,11528,13706,14004,13774,13292,14110,14836,13842,14434,14960,16658,21148],"text":["Year: 1999 <br>Age Group: 15–24 <br>Total Deaths: 4890","Year: 2000 <br>Age Group: 15–24 <br>Total Deaths: 5664","Year: 2001 <br>Age Group: 15–24 <br>Total Deaths: 6696","Year: 2002 <br>Age Group: 15–24 <br>Total Deaths: 8282","Year: 2003 <br>Age Group: 15–24 <br>Total Deaths: 9860","Year: 2004 <br>Age Group: 15–24 <br>Total Deaths: 10886","Year: 2005 <br>Age Group: 15–24 <br>Total Deaths: 11528","Year: 2006 <br>Age Group: 15–24 <br>Total Deaths: 13706","Year: 2007 <br>Age Group: 15–24 <br>Total Deaths: 14004","Year: 2008 <br>Age Group: 15–24 <br>Total Deaths: 13774","Year: 2009 <br>Age Group: 15–24 <br>Total Deaths: 13292","Year: 2010 <br>Age Group: 15–24 <br>Total Deaths: 14110","Year: 2011 <br>Age Group: 15–24 <br>Total Deaths: 14836","Year: 2012 <br>Age Group: 15–24 <br>Total Deaths: 13842","Year: 2013 <br>Age Group: 15–24 <br>Total Deaths: 14434","Year: 2014 <br>Age Group: 15–24 <br>Total Deaths: 14960","Year: 2015 <br>Age Group: 15–24 <br>Total Deaths: 16658","Year: 2016 <br>Age Group: 15–24 <br>Total Deaths: 21148"],"type":"bar","textposition":"none","marker":{"autocolorscale":false,"color":"rgba(216,135,130,1)","line":{"width":1.8897637795275593,"color":"transparent"}},"name":"15–24","legendgroup":"15–24","showlegend":true,"xaxis":"x2","yaxis":"y","hoverinfo":"text","frame":null},{"orientation":"v","width":[0.90000000000009095,0.90000000000009095,0.90000000000009095,0.90000000000009095,0.90000000000009095,0.90000000000009095,0.90000000000009095,0.90000000000009095,0.90000000000009095,0.90000000000009095,0.90000000000009095,0.90000000000009095,0.90000000000009095,0.90000000000009095,0.90000000000009095,0.90000000000009095,0.90000000000009095,0.90000000000009095],"base":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],"x":[1999,2000,2001,2002,2003,2004,2005,2006,2007,2008,2009,2010,2011,2012,2013,2014,2015,2016],"y":[12790,12522,13464,16282,17694,18492,21076,25102,26384,26602,27720,29906,33360,33542,35304,39640,46808,60958],"text":["Year: 1999 <br>Age Group: 25–34 <br>Total Deaths: 12790","Year: 2000 <br>Age Group: 25–34 <br>Total Deaths: 12522","Year: 2001 <br>Age Group: 25–34 <br>Total Deaths: 13464","Year: 2002 <br>Age Group: 25–34 <br>Total Deaths: 16282","Year: 2003 <br>Age Group: 25–34 <br>Total Deaths: 17694","Year: 2004 <br>Age Group: 25–34 <br>Total Deaths: 18492","Year: 2005 <br>Age Group: 25–34 <br>Total Deaths: 21076","Year: 2006 <br>Age Group: 25–34 <br>Total Deaths: 25102","Year: 2007 <br>Age Group: 25–34 <br>Total Deaths: 26384","Year: 2008 <br>Age Group: 25–34 <br>Total Deaths: 26602","Year: 2009 <br>Age Group: 25–34 <br>Total Deaths: 27720","Year: 2010 <br>Age Group: 25–34 <br>Total Deaths: 29906","Year: 2011 <br>Age Group: 25–34 <br>Total Deaths: 33360","Year: 2012 <br>Age Group: 25–34 <br>Total Deaths: 33542","Year: 2013 <br>Age Group: 25–34 <br>Total Deaths: 35304","Year: 2014 <br>Age Group: 25–34 <br>Total Deaths: 39640","Year: 2015 <br>Age Group: 25–34 <br>Total Deaths: 46808","Year: 2016 <br>Age Group: 25–34 <br>Total Deaths: 60958"],"type":"bar","textposition":"none","marker":{"autocolorscale":false,"color":"rgba(227,171,167,1)","line":{"width":1.8897637795275593,"color":"transparent"}},"name":"25–34","legendgroup":"25–34","showlegend":true,"xaxis":"x3","yaxis":"y","hoverinfo":"text","frame":null},{"orientation":"v","width":[0.90000000000009095,0.90000000000009095,0.90000000000009095,0.90000000000009095,0.90000000000009095,0.90000000000009095,0.90000000000009095,0.90000000000009095,0.90000000000009095,0.90000000000009095,0.90000000000009095,0.90000000000009095,0.90000000000009095,0.90000000000009095,0.90000000000009095,0.90000000000009095,0.90000000000009095,0.90000000000009095],"base":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],"x":[1999,2000,2001,2002,2003,2004,2005,2006,2007,2008,2009,2010,2011,2012,2013,2014,2015,2016],"y":[24868,25608,27602,31934,33086,33418,33668,37116,36232,35182,33592,33784,36008,35300,36794,39946,45428,56062],"text":["Year: 1999 <br>Age Group: 35–44 <br>Total Deaths: 24868","Year: 2000 <br>Age Group: 35–44 <br>Total Deaths: 25608","Year: 2001 <br>Age Group: 35–44 <br>Total Deaths: 27602","Year: 2002 <br>Age Group: 35–44 <br>Total Deaths: 31934","Year: 2003 <br>Age Group: 35–44 <br>Total Deaths: 33086","Year: 2004 <br>Age Group: 35–44 <br>Total Deaths: 33418","Year: 2005 <br>Age Group: 35–44 <br>Total Deaths: 33668","Year: 2006 <br>Age Group: 35–44 <br>Total Deaths: 37116","Year: 2007 <br>Age Group: 35–44 <br>Total Deaths: 36232","Year: 2008 <br>Age Group: 35–44 <br>Total Deaths: 35182","Year: 2009 <br>Age Group: 35–44 <br>Total Deaths: 33592","Year: 2010 <br>Age Group: 35–44 <br>Total Deaths: 33784","Year: 2011 <br>Age Group: 35–44 <br>Total Deaths: 36008","Year: 2012 <br>Age Group: 35–44 <br>Total Deaths: 35300","Year: 2013 <br>Age Group: 35–44 <br>Total Deaths: 36794","Year: 2014 <br>Age Group: 35–44 <br>Total Deaths: 39946","Year: 2015 <br>Age Group: 35–44 <br>Total Deaths: 45428","Year: 2016 <br>Age Group: 35–44 <br>Total Deaths: 56062"],"type":"bar","textposition":"none","marker":{"autocolorscale":false,"color":"rgba(237,215,217,1)","line":{"width":1.8897637795275593,"color":"transparent"}},"name":"35–44","legendgroup":"35–44","showlegend":true,"xaxis":"x","yaxis":"y2","hoverinfo":"text","frame":null},{"orientation":"v","width":[0.90000000000009095,0.90000000000009095,0.90000000000009095,0.90000000000009095,0.90000000000009095,0.90000000000009095,0.90000000000009095,0.90000000000009095,0.90000000000009095,0.90000000000009095,0.90000000000009095,0.90000000000009095,0.90000000000009095,0.90000000000009095,0.90000000000009095,0.90000000000009095,0.90000000000009095,0.90000000000009095],"base":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],"x":[1999,2000,2001,2002,2003,2004,2005,2006,2007,2008,2009,2010,2011,2012,2013,2014,2015,2016],"y":[16086,17326,20256,25654,29004,31844,35488,41270,43692,44412,45040,44666,47216,46980,47592,48472,51188,58292],"text":["Year: 1999 <br>Age Group: 45–54 <br>Total Deaths: 16086","Year: 2000 <br>Age Group: 45–54 <br>Total Deaths: 17326","Year: 2001 <br>Age Group: 45–54 <br>Total Deaths: 20256","Year: 2002 <br>Age Group: 45–54 <br>Total Deaths: 25654","Year: 2003 <br>Age Group: 45–54 <br>Total Deaths: 29004","Year: 2004 <br>Age Group: 45–54 <br>Total Deaths: 31844","Year: 2005 <br>Age Group: 45–54 <br>Total Deaths: 35488","Year: 2006 <br>Age Group: 45–54 <br>Total Deaths: 41270","Year: 2007 <br>Age Group: 45–54 <br>Total Deaths: 43692","Year: 2008 <br>Age Group: 45–54 <br>Total Deaths: 44412","Year: 2009 <br>Age Group: 45–54 <br>Total Deaths: 45040","Year: 2010 <br>Age Group: 45–54 <br>Total Deaths: 44666","Year: 2011 <br>Age Group: 45–54 <br>Total Deaths: 47216","Year: 2012 <br>Age Group: 45–54 <br>Total Deaths: 46980","Year: 2013 <br>Age Group: 45–54 <br>Total Deaths: 47592","Year: 2014 <br>Age Group: 45–54 <br>Total Deaths: 48472","Year: 2015 <br>Age Group: 45–54 <br>Total Deaths: 51188","Year: 2016 <br>Age Group: 45–54 <br>Total Deaths: 58292"],"type":"bar","textposition":"none","marker":{"autocolorscale":false,"color":"rgba(201,201,221,1)","line":{"width":1.8897637795275593,"color":"transparent"}},"name":"45–54","legendgroup":"45–54","showlegend":true,"xaxis":"x2","yaxis":"y2","hoverinfo":"text","frame":null},{"orientation":"v","width":[0.90000000000009095,0.90000000000009095,0.90000000000009095,0.90000000000009095,0.90000000000009095,0.90000000000009095,0.90000000000009095,0.90000000000009095,0.90000000000009095,0.90000000000009095,0.90000000000009095,0.90000000000009095,0.90000000000009095,0.90000000000009095,0.90000000000009095,0.90000000000009095,0.90000000000009095,0.90000000000009095],"base":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],"x":[1999,2000,2001,2002,2003,2004,2005,2006,2007,2008,2009,2010,2011,2012,2013,2014,2015,2016],"y":[3892,3998,4676,6350,7676,9024,10956,13280,15980,17422,19224,21698,23918,25354,29856,32058,35094,41904],"text":["Year: 1999 <br>Age Group: 55–64 <br>Total Deaths: 3892","Year: 2000 <br>Age Group: 55–64 <br>Total Deaths: 3998","Year: 2001 <br>Age Group: 55–64 <br>Total Deaths: 4676","Year: 2002 <br>Age Group: 55–64 <br>Total Deaths: 6350","Year: 2003 <br>Age Group: 55–64 <br>Total Deaths: 7676","Year: 2004 <br>Age Group: 55–64 <br>Total Deaths: 9024","Year: 2005 <br>Age Group: 55–64 <br>Total Deaths: 10956","Year: 2006 <br>Age Group: 55–64 <br>Total Deaths: 13280","Year: 2007 <br>Age Group: 55–64 <br>Total Deaths: 15980","Year: 2008 <br>Age Group: 55–64 <br>Total Deaths: 17422","Year: 2009 <br>Age Group: 55–64 <br>Total Deaths: 19224","Year: 2010 <br>Age Group: 55–64 <br>Total Deaths: 21698","Year: 2011 <br>Age Group: 55–64 <br>Total Deaths: 23918","Year: 2012 <br>Age Group: 55–64 <br>Total Deaths: 25354","Year: 2013 <br>Age Group: 55–64 <br>Total Deaths: 29856","Year: 2014 <br>Age Group: 55–64 <br>Total Deaths: 32058","Year: 2015 <br>Age Group: 55–64 <br>Total Deaths: 35094","Year: 2016 <br>Age Group: 55–64 <br>Total Deaths: 41904"],"type":"bar","textposition":"none","marker":{"autocolorscale":false,"color":"rgba(157,157,199,1)","line":{"width":1.8897637795275593,"color":"transparent"}},"name":"55–64","legendgroup":"55–64","showlegend":true,"xaxis":"x3","yaxis":"y2","hoverinfo":"text","frame":null},{"orientation":"v","width":[0.90000000000009095,0.90000000000009095,0.90000000000009095,0.90000000000009095,0.90000000000009095,0.90000000000009095,0.90000000000009095,0.90000000000009095,0.90000000000009095,0.90000000000009095,0.90000000000009095,0.90000000000009095,0.90000000000009095,0.90000000000009095,0.90000000000009095,0.90000000000009095,0.90000000000009095,0.90000000000009095],"base":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],"x":[1999,2000,2001,2002,2003,2004,2005,2006,2007,2008,2009,2010,2011,2012,2013,2014,2015,2016],"y":[1716,1474,1730,1986,2094,2168,2394,2662,3138,3726,3938,4024,4752,5500,6328,7166,7816,9200],"text":["Year: 1999 <br>Age Group: 65–74 <br>Total Deaths: 1716","Year: 2000 <br>Age Group: 65–74 <br>Total Deaths: 1474","Year: 2001 <br>Age Group: 65–74 <br>Total Deaths: 1730","Year: 2002 <br>Age Group: 65–74 <br>Total Deaths: 1986","Year: 2003 <br>Age Group: 65–74 <br>Total Deaths: 2094","Year: 2004 <br>Age Group: 65–74 <br>Total Deaths: 2168","Year: 2005 <br>Age Group: 65–74 <br>Total Deaths: 2394","Year: 2006 <br>Age Group: 65–74 <br>Total Deaths: 2662","Year: 2007 <br>Age Group: 65–74 <br>Total Deaths: 3138","Year: 2008 <br>Age Group: 65–74 <br>Total Deaths: 3726","Year: 2009 <br>Age Group: 65–74 <br>Total Deaths: 3938","Year: 2010 <br>Age Group: 65–74 <br>Total Deaths: 4024","Year: 2011 <br>Age Group: 65–74 <br>Total Deaths: 4752","Year: 2012 <br>Age Group: 65–74 <br>Total Deaths: 5500","Year: 2013 <br>Age Group: 65–74 <br>Total Deaths: 6328","Year: 2014 <br>Age Group: 65–74 <br>Total Deaths: 7166","Year: 2015 <br>Age Group: 65–74 <br>Total Deaths: 7816","Year: 2016 <br>Age Group: 65–74 <br>Total Deaths: 9200"],"type":"bar","textposition":"none","marker":{"autocolorscale":false,"color":"rgba(130,130,170,1)","line":{"width":1.8897637795275593,"color":"transparent"}},"name":"65–74","legendgroup":"65–74","showlegend":true,"xaxis":"x","yaxis":"y3","hoverinfo":"text","frame":null},{"orientation":"v","width":[0.90000000000009095,0.90000000000009095,0.90000000000009095,0.90000000000009095,0.90000000000009095,0.90000000000009095,0.90000000000009095,0.90000000000009095,0.90000000000009095,0.90000000000009095,0.90000000000009095,0.90000000000009095,0.90000000000009095,0.90000000000009095,0.90000000000009095,0.90000000000009095,0.90000000000009095,0.90000000000009095],"base":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],"x":[1999,2000,2001,2002,2003,2004,2005,2006,2007,2008,2009,2010,2011,2012,2013,2014,2015,2016],"y":[1964,1928,1866,2180,2136,2190,2348,2544,2546,2556,2852,2788,2726,2764,2932,2970,3052,2920],"text":["Year: 1999 <br>Age Group: 75+ <br>Total Deaths: 1964","Year: 2000 <br>Age Group: 75+ <br>Total Deaths: 1928","Year: 2001 <br>Age Group: 75+ <br>Total Deaths: 1866","Year: 2002 <br>Age Group: 75+ <br>Total Deaths: 2180","Year: 2003 <br>Age Group: 75+ <br>Total Deaths: 2136","Year: 2004 <br>Age Group: 75+ <br>Total Deaths: 2190","Year: 2005 <br>Age Group: 75+ <br>Total Deaths: 2348","Year: 2006 <br>Age Group: 75+ <br>Total Deaths: 2544","Year: 2007 <br>Age Group: 75+ <br>Total Deaths: 2546","Year: 2008 <br>Age Group: 75+ <br>Total Deaths: 2556","Year: 2009 <br>Age Group: 75+ <br>Total Deaths: 2852","Year: 2010 <br>Age Group: 75+ <br>Total Deaths: 2788","Year: 2011 <br>Age Group: 75+ <br>Total Deaths: 2726","Year: 2012 <br>Age Group: 75+ <br>Total Deaths: 2764","Year: 2013 <br>Age Group: 75+ <br>Total Deaths: 2932","Year: 2014 <br>Age Group: 75+ <br>Total Deaths: 2970","Year: 2015 <br>Age Group: 75+ <br>Total Deaths: 3052","Year: 2016 <br>Age Group: 75+ <br>Total Deaths: 2920"],"type":"bar","textposition":"none","marker":{"autocolorscale":false,"color":"rgba(90,90,131,1)","line":{"width":1.8897637795275593,"color":"transparent"}},"name":"75+","legendgroup":"75+","showlegend":true,"xaxis":"x2","yaxis":"y3","hoverinfo":"text","frame":null}],"layout":{"margin":{"t":55.452054794520549,"r":7.3059360730593621,"b":40.182648401826498,"l":60.639269406392714},"font":{"color":"rgba(0,0,0,1)","family":"","size":14.611872146118724},"title":{"text":"Fig. 4: Total Count Drug Poisoning Deaths by Age Range (1999-2016)","font":{"color":"rgba(0,0,0,1)","family":"","size":17.534246575342465},"x":0,"xref":"paper"},"xaxis":{"domain":[0,0.32246140465318546],"automargin":true,"type":"linear","autorange":false,"range":[1997.655,2017.345],"tickmode":"array","ticktext":["2000","2005","2010","2015"],"tickvals":[2000,2005,2010,2015],"categoryorder":"array","categoryarray":["2000","2005","2010","2015"],"nticks":null,"ticks":"","tickcolor":null,"ticklen":3.6529680365296811,"tickwidth":0,"showticklabels":true,"tickfont":{"color":"rgba(77,77,77,1)","family":"","size":11.68949771689498},"tickangle":-0,"showline":false,"linecolor":null,"linewidth":0,"showgrid":true,"gridcolor":"rgba(235,235,235,1)","gridwidth":0.66417600664176002,"zeroline":false,"anchor":"y3","title":"","hoverformat":".2f"},"annotations":[{"text":"Year","x":0.5,"y":0,"showarrow":false,"ax":0,"ay":0,"font":{"color":"rgba(0,0,0,1)","family":"","size":14.611872146118724},"xref":"paper","yref":"paper","textangle":-0,"xanchor":"center","yanchor":"top","annotationType":"axis","yshift":-21.917808219178081},{"text":"Total Drug Poisoning Deaths","x":0,"y":0.5,"showarrow":false,"ax":0,"ay":0,"font":{"color":"rgba(0,0,0,1)","family":"","size":14.611872146118724},"xref":"paper","yref":"paper","textangle":-90,"xanchor":"right","yanchor":"center","annotationType":"axis","xshift":-45.296803652968052},{"text":"0–14","x":0.16123070232659273,"y":1,"showarrow":false,"ax":0,"ay":0,"font":{"color":"rgba(26,26,26,1)","family":"","size":11.68949771689498},"xref":"paper","yref":"paper","textangle":-0,"xanchor":"center","yanchor":"bottom"},{"text":"15–24","x":0.5,"y":1,"showarrow":false,"ax":0,"ay":0,"font":{"color":"rgba(26,26,26,1)","family":"","size":11.68949771689498},"xref":"paper","yref":"paper","textangle":-0,"xanchor":"center","yanchor":"bottom"},{"text":"25–34","x":0.83876929767340724,"y":1,"showarrow":false,"ax":0,"ay":0,"font":{"color":"rgba(26,26,26,1)","family":"","size":11.68949771689498},"xref":"paper","yref":"paper","textangle":-0,"xanchor":"center","yanchor":"bottom"},{"text":"35–44","x":0.16123070232659273,"y":0.62709284627092854,"showarrow":false,"ax":0,"ay":0,"font":{"color":"rgba(26,26,26,1)","family":"","size":11.68949771689498},"xref":"paper","yref":"paper","textangle":-0,"xanchor":"center","yanchor":"bottom"},{"text":"45–54","x":0.5,"y":0.62709284627092854,"showarrow":false,"ax":0,"ay":0,"font":{"color":"rgba(26,26,26,1)","family":"","size":11.68949771689498},"xref":"paper","yref":"paper","textangle":-0,"xanchor":"center","yanchor":"bottom"},{"text":"55–64","x":0.83876929767340724,"y":0.62709284627092854,"showarrow":false,"ax":0,"ay":0,"font":{"color":"rgba(26,26,26,1)","family":"","size":11.68949771689498},"xref":"paper","yref":"paper","textangle":-0,"xanchor":"center","yanchor":"bottom"},{"text":"65–74","x":0.16123070232659273,"y":0.29375951293759517,"showarrow":false,"ax":0,"ay":0,"font":{"color":"rgba(26,26,26,1)","family":"","size":11.68949771689498},"xref":"paper","yref":"paper","textangle":-0,"xanchor":"center","yanchor":"bottom"},{"text":"75+","x":0.5,"y":0.29375951293759517,"showarrow":false,"ax":0,"ay":0,"font":{"color":"rgba(26,26,26,1)","family":"","size":11.68949771689498},"xref":"paper","yref":"paper","textangle":-0,"xanchor":"center","yanchor":"bottom"}],"yaxis":{"domain":[0.70624048706240494,1],"automargin":true,"type":"linear","autorange":false,"range":[-3047.9000000000001,64005.900000000001],"tickmode":"array","ticktext":["0","20,000","40,000","60,000"],"tickvals":[0,20000,40000,60000],"categoryorder":"array","categoryarray":["0","20,000","40,000","60,000"],"nticks":null,"ticks":"","tickcolor":null,"ticklen":3.6529680365296811,"tickwidth":0,"showticklabels":true,"tickfont":{"color":"rgba(77,77,77,1)","family":"","size":11.68949771689498},"tickangle":-0,"showline":false,"linecolor":null,"linewidth":0,"showgrid":true,"gridcolor":"rgba(235,235,235,1)","gridwidth":0.66417600664176002,"zeroline":false,"anchor":"x","title":"","hoverformat":".2f"},"shapes":[{"type":"rect","fillcolor":null,"line":{"color":null,"width":0,"linetype":[]},"yref":"paper","xref":"paper","x0":0,"x1":0.32246140465318546,"y0":0.70624048706240494,"y1":1},{"type":"rect","fillcolor":null,"line":{"color":null,"width":0,"linetype":[]},"yref":"paper","xref":"paper","x0":0,"x1":0.32246140465318546,"y0":0,"y1":23.37899543378996,"yanchor":1,"ysizemode":"pixel"},{"type":"rect","fillcolor":null,"line":{"color":null,"width":0,"linetype":[]},"yref":"paper","xref":"paper","x0":0.34420526201348117,"x1":0.65579473798651877,"y0":0.70624048706240494,"y1":1},{"type":"rect","fillcolor":null,"line":{"color":null,"width":0,"linetype":[]},"yref":"paper","xref":"paper","x0":0.34420526201348117,"x1":0.65579473798651877,"y0":0,"y1":23.37899543378996,"yanchor":1,"ysizemode":"pixel"},{"type":"rect","fillcolor":null,"line":{"color":null,"width":0,"linetype":[]},"yref":"paper","xref":"paper","x0":0.67753859534681449,"x1":1,"y0":0.70624048706240494,"y1":1},{"type":"rect","fillcolor":null,"line":{"color":null,"width":0,"linetype":[]},"yref":"paper","xref":"paper","x0":0.67753859534681449,"x1":1,"y0":0,"y1":23.37899543378996,"yanchor":1,"ysizemode":"pixel"},{"type":"rect","fillcolor":null,"line":{"color":null,"width":0,"linetype":[]},"yref":"paper","xref":"paper","x0":0,"x1":0.32246140465318546,"y0":0.37290715372907157,"y1":0.62709284627092854},{"type":"rect","fillcolor":null,"line":{"color":null,"width":0,"linetype":[]},"yref":"paper","xref":"paper","x0":0,"x1":0.32246140465318546,"y0":0,"y1":23.37899543378996,"yanchor":0.62709284627092854,"ysizemode":"pixel"},{"type":"rect","fillcolor":null,"line":{"color":null,"width":0,"linetype":[]},"yref":"paper","xref":"paper","x0":0.34420526201348117,"x1":0.65579473798651877,"y0":0.37290715372907157,"y1":0.62709284627092854},{"type":"rect","fillcolor":null,"line":{"color":null,"width":0,"linetype":[]},"yref":"paper","xref":"paper","x0":0.34420526201348117,"x1":0.65579473798651877,"y0":0,"y1":23.37899543378996,"yanchor":0.62709284627092854,"ysizemode":"pixel"},{"type":"rect","fillcolor":null,"line":{"color":null,"width":0,"linetype":[]},"yref":"paper","xref":"paper","x0":0.67753859534681449,"x1":1,"y0":0.37290715372907157,"y1":0.62709284627092854},{"type":"rect","fillcolor":null,"line":{"color":null,"width":0,"linetype":[]},"yref":"paper","xref":"paper","x0":0.67753859534681449,"x1":1,"y0":0,"y1":23.37899543378996,"yanchor":0.62709284627092854,"ysizemode":"pixel"},{"type":"rect","fillcolor":null,"line":{"color":null,"width":0,"linetype":[]},"yref":"paper","xref":"paper","x0":0,"x1":0.32246140465318546,"y0":0,"y1":0.29375951293759517},{"type":"rect","fillcolor":null,"line":{"color":null,"width":0,"linetype":[]},"yref":"paper","xref":"paper","x0":0,"x1":0.32246140465318546,"y0":0,"y1":23.37899543378996,"yanchor":0.29375951293759517,"ysizemode":"pixel"},{"type":"rect","fillcolor":null,"line":{"color":null,"width":0,"linetype":[]},"yref":"paper","xref":"paper","x0":0.34420526201348117,"x1":0.65579473798651877,"y0":0,"y1":0.29375951293759517},{"type":"rect","fillcolor":null,"line":{"color":null,"width":0,"linetype":[]},"yref":"paper","xref":"paper","x0":0.34420526201348117,"x1":0.65579473798651877,"y0":0,"y1":23.37899543378996,"yanchor":0.29375951293759517,"ysizemode":"pixel"}],"xaxis2":{"type":"linear","autorange":false,"range":[1997.655,2017.345],"tickmode":"array","ticktext":["2000","2005","2010","2015"],"tickvals":[2000,2005,2010,2015],"categoryorder":"array","categoryarray":["2000","2005","2010","2015"],"nticks":null,"ticks":"","tickcolor":null,"ticklen":3.6529680365296811,"tickwidth":0,"showticklabels":true,"tickfont":{"color":"rgba(77,77,77,1)","family":"","size":11.68949771689498},"tickangle":-0,"showline":false,"linecolor":null,"linewidth":0,"showgrid":true,"domain":[0.34420526201348117,0.65579473798651877],"gridcolor":"rgba(235,235,235,1)","gridwidth":0.66417600664176002,"zeroline":false,"anchor":"y3","title":"","hoverformat":".2f"},"xaxis3":{"type":"linear","autorange":false,"range":[1997.655,2017.345],"tickmode":"array","ticktext":["2000","2005","2010","2015"],"tickvals":[2000,2005,2010,2015],"categoryorder":"array","categoryarray":["2000","2005","2010","2015"],"nticks":null,"ticks":"","tickcolor":null,"ticklen":3.6529680365296811,"tickwidth":0,"showticklabels":true,"tickfont":{"color":"rgba(77,77,77,1)","family":"","size":11.68949771689498},"tickangle":-0,"showline":false,"linecolor":null,"linewidth":0,"showgrid":true,"domain":[0.67753859534681449,1],"gridcolor":"rgba(235,235,235,1)","gridwidth":0.66417600664176002,"zeroline":false,"anchor":"y2","title":"","hoverformat":".2f"},"yaxis2":{"type":"linear","autorange":false,"range":[-3047.9000000000001,64005.900000000001],"tickmode":"array","ticktext":["0","20,000","40,000","60,000"],"tickvals":[0,20000,40000,60000],"categoryorder":"array","categoryarray":["0","20,000","40,000","60,000"],"nticks":null,"ticks":"","tickcolor":null,"ticklen":3.6529680365296811,"tickwidth":0,"showticklabels":true,"tickfont":{"color":"rgba(77,77,77,1)","family":"","size":11.68949771689498},"tickangle":-0,"showline":false,"linecolor":null,"linewidth":0,"showgrid":true,"domain":[0.37290715372907157,0.62709284627092854],"gridcolor":"rgba(235,235,235,1)","gridwidth":0.66417600664176002,"zeroline":false,"anchor":"x","title":"","hoverformat":".2f"},"yaxis3":{"type":"linear","autorange":false,"range":[-3047.9000000000001,64005.900000000001],"tickmode":"array","ticktext":["0","20,000","40,000","60,000"],"tickvals":[0,20000,40000,60000],"categoryorder":"array","categoryarray":["0","20,000","40,000","60,000"],"nticks":null,"ticks":"","tickcolor":null,"ticklen":3.6529680365296811,"tickwidth":0,"showticklabels":true,"tickfont":{"color":"rgba(77,77,77,1)","family":"","size":11.68949771689498},"tickangle":-0,"showline":false,"linecolor":null,"linewidth":0,"showgrid":true,"domain":[0,0.29375951293759517],"gridcolor":"rgba(235,235,235,1)","gridwidth":0.66417600664176002,"zeroline":false,"anchor":"x","title":"","hoverformat":".2f"},"showlegend":true,"legend":{"bgcolor":null,"bordercolor":null,"borderwidth":0,"font":{"color":"rgba(0,0,0,1)","family":"","size":11.68949771689498},"title":{"text":"Age Group","font":{"color":"rgba(0,0,0,1)","family":"","size":14.611872146118724}}},"hovermode":"closest","barmode":"relative"},"config":{"doubleClick":"reset","modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"source":"A","attrs":{"9f2730f96cef":{"x":{},"y":{},"fill":{},"text":{},"type":"bar"}},"cur_data":"9f2730f96cef","visdat":{"9f2730f96cef":["function (y) ","x"]},"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.20000000000000001,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+</div>
+</div>
+<p><strong>Figure 4 Description:</strong> This faceted bar chart displays the total drug poisoning deaths from 1999 to 2016, segmented by age groups. Middle age groups (25–34, 35–44, 45–54) show the steepest increases in total deaths, particularly 25–34 and 45–54, which display significant jumps post-2010. Those on the tail ends of this data (youngest and oldest age groups of the population) have the lowest rates, but still exhibit some drug poisoning death rates.</p>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp('/' + window.location.host + '/');
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>
