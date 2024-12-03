@@ -170,7 +170,7 @@ deaths_by_race_ethnicity <- plot_ly(filtered_data,
 # Display the plot
 deaths_by_race_ethnicity
 ```
-**Figure 2 Description:** This line chart shows the association between race/ethnicity and drug-related mortality rates from 1999 to 2016, highlighting trends for Hispanic, Non-Hispanic Black, and Non-Hispanic White populations. Non-Hispanic Whites experienced the steepest increase in mortality, while Hispanics experiences the least steep increase.
+**Figure 2 Description:** This line chart shows the association between race/ethnicity and drug-related mortality rates from 1999 to 2016, highlighting trends for Hispanic, Non-Hispanic Black, and Non-Hispanic White populations. Non-Hispanic Whites experienced the steepest increase in mortality, while Hispanics experienced the least steep increase.
 ```{r plot 3, echo=FALSE, message=FALSE, warning=FALSE}
 # Load necessary libraries
 suppressWarnings(suppressMessages({
