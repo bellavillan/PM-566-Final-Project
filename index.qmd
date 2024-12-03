@@ -9,17 +9,21 @@ format:
 Welcome to my data science portfolio, where I apply statistical and analytical skills to uncover critical insights into one of the most pressing public health crises in recent U.S. history. Using a comprehensive dataset from the Centers for Disease Control and Prevention (CDC) on drug overdose death rates (1999–2016), this project explores key questions about how drug mortality has evolved over time, the demographic factors at play, and regional disparities in the epidemic.  
 
 Through interactive visualizations and in-depth analysis, you’ll discover:  
-1. Which regions of the U.S. have seen the sharpest increases in drug poisoning death rates over time.  
-2. Whether Hispanic origin is strongly associated with drug mortality across the nation.  
-3. How drug poisoning death rates differ between men and women in various U.S. regions.  
+
+1.  Which regions of the U.S. have seen the sharpest increases in drug poisoning death rates over time.  
+2.  Whether Hispanic origin is strongly associated with drug mortality across the nation.  
+3.  How drug poisoning death rates differ between men and women in various U.S. regions.  
+4.  Which age ranges see the most drug poisoning deaths?
 
 This project not only demonstrates the power of data in addressing real-world challenges but also serves as a foundation for my growing expertise in public health analytics. Dive deeper into the insights on the full project page!  
 
+### Link to Download Written Report
 [View the Full Analysis in My Written Report](https://github.com/bellavillan/PM-566-Final-Project/blob/main/Written-Report.pdf)
 
-### Interactive Data Visualizations
+## Interactive Data Visualizations: Evolving Trends of the Opioid Crisis
+These four compelling interactive plots will unravel the complexities of drug poisoning deaths across the United States from 1999 to 2016. These visualizations bring data to life, answering critical questions about regional trends, Hispanic origin and mortality, gender disparities, and age vulnerabilities. 
 
-The plots display the mean drug poisoning death rates across different U.S. regions (Northeast, South, Midwest, and West) from 1999 to 2016, with each region represented by a distinct color. The national death rate is shown as a red line to highlight the overall trend alongside regional variations.
+Through clear and engaging graphs, these interactive plots uncover hidden insights, challenge assumptions, and guide viewers toward a deeper understanding of one of the most pressing public health crises of our time.
 
 ```{r setup and data, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
@@ -69,7 +73,7 @@ mean_death_rate_combined <- bind_rows(
 )
 ```
 
-```{r plot 2- all, echo=FALSE}
+```{r plot 1- all, echo=FALSE}
 # Install and load necessary libraries
 suppressWarnings(suppressMessages({
   if (!require(plotly)) install.packages("plotly")
@@ -119,7 +123,7 @@ mean_death_rate_region_nation <- mean_death_rate_region_nation %>%
 # Customize the layout
 mean_death_rate_region_nation <- mean_death_rate_region_nation %>%
   layout(
-    title = "Mean Drug Poisoning Death Rate by Region and National (1999-2016)",
+    title = "Fig. 1: Mean Drug Poisoning Death Rate by Region and National (1999-2016)",
     xaxis = list(title = "Year"),
     yaxis = list(title = "Mean Death Rate (Deaths per 100,000)"),
     legend = list(title = list(text = "Region"))
@@ -128,8 +132,8 @@ mean_death_rate_region_nation <- mean_death_rate_region_nation %>%
 # Display the plot
 mean_death_rate_region_nation
 ```
-
-```{r, echo=FALSE}
+**Figure 1 Description:** This graph shows drug poisoning death rates (per 100,000) from 1999 to 2016 across U.S. regions compared to the national average (red line). The Northeast sees the sharpest rise, peaking near 28 deaths by 2016, while the South follows as the second-highest. The Midwest remains the lowest, and the West plateaus after an initial increase. This highlights regional disparities in the opioid epidemic's impact.
+```{r plot 2, echo=FALSE}
 # Install and load necessary libraries
 suppressWarnings(suppressMessages({
   if (!require(plotly)) install.packages("plotly")
@@ -147,47 +151,98 @@ filtered_data <- drug_mortality %>%
   group_by(Year, `Race and Hispanic Origin`) %>%
   summarize(mean_crude_rate = mean(`Crude Death Rate`, na.rm = TRUE), .groups = "drop")  # Average Crude Death Rate
 
-# Create an interactive scatterplot with a dropdown menu
-fig <- plot_ly(filtered_data, 
+# Create an interactive scatterplot 
+deaths_by_race_ethnicity <- plot_ly(filtered_data, 
                x = ~Year, 
                y = ~mean_crude_rate, 
                type = 'scatter', 
                mode = 'lines+markers', 
-               color = ~`Race and Hispanic Origin`,
+               color = ~factor(`Race and Hispanic Origin`, levels = c("Non-Hispanic White", "Non-Hispanic Black", "Hispanic")), # Reorder legend
                colors = "Set2",  # Use a color palette
                text = ~paste("Year:", Year, "<br>Rate:", mean_crude_rate),
                hoverinfo = "text") %>%
   layout(
-    title = "Association Between Race/Hispanic Origin and Drug Mortality",
+    title = "Fig. 2: Association Between Race/Hispanic Origin and Drug Mortality (1999-2016)",
     xaxis = list(title = "Year"),
     yaxis = list(title = "Mean Crude Death Rate (per 100,000)"))
 
+
 # Display the plot
-fig
+deaths_by_race_ethnicity
 ```
-```{r, echo=FALSE, message=FALSE, warning=FALSE}
+**Figure 2 Description:** This line chart shows the association between race/ethnicity and drug-related mortality rates from 1999 to 2016, highlighting trends for Hispanic, Non-Hispanic Black, and Non-Hispanic White populations. Dashed lines represent regression trends, with Non-Hispanic Whites experiencing the steepest increase in mortality.
+```{r plot 3, echo=FALSE, message=FALSE, warning=FALSE}
 # Load necessary libraries
 suppressWarnings(suppressMessages({
   if (!require(plotly)) install.packages("plotly")
   library(plotly)
   if (!require(dplyr)) install.packages("dplyr")
-  library(dplyr)
-}))
+  library(dplyr)}))
 
-# Create the ggplot bar plot
-sex_vs_crude_plot <- ggplot(drug_mortality, aes(x = Year, y = `Crude Death Rate`, fill = Sex)) +
-  geom_bar(stat = "identity") + 
-  labs(title = "Drug Poisoning Death Rates by Sex and Region (1999-2016)",
-       x = "Year", y = "Crude Death Rate (per 100,000)") +
+# Summarize the data to count deaths, stratified by Sex
+deaths_by_sex <- drug_mortality %>%
+  group_by(Year, Sex) %>%
+  summarise(
+    Total_Deaths = sum(Deaths, na.rm = TRUE), 
+    Total_Population = sum(Population, na.rm = TRUE),
+    .groups = "drop")
+
+# Create the ggplot bar plot with deaths by sex and hover text
+sex_vs_deaths_plot <- ggplot(deaths_by_sex, aes(
+  x = Year, y = Total_Deaths, fill = Sex,
+  text = paste(
+    "Year:", Year,
+    "<br>Sex:", Sex,
+    "<br>Total Deaths:", Total_Deaths))) +
+  geom_bar(stat = "identity") +
+  labs(title = "Fig. 3: Total Count Drug Poisoning Deaths by Sex (1999-2016)",
+       x = "Year", y = "Total Drug Poisoning Deaths") +
   facet_wrap(~ Sex) +
   theme_minimal() +
-  scale_fill_manual(values = c("Male" = "blue", "Female" = "pink"))
+  scale_fill_manual(values = c("Male" = "skyblue", "Female" = "pink")) +
+  scale_y_continuous(labels = scales::label_comma())  # Update y-axis to show whole numbers and add clarity for units
 
-# Convert the ggplot to an interactive plotly plot
-interactive_sex_vs_crude_plot <- ggplotly(sex_vs_crude_plot)
+# Convert the ggplot to an interactive plotly plot and use the `text` aesthetic for tooltips
+interactive_sex_vs_deaths_plot <- ggplotly(sex_vs_deaths_plot, tooltip = "text")
 
-# Display the plot
-interactive_sex_vs_crude_plot
+# Display the interactive plot
+interactive_sex_vs_deaths_plot
 ```
+**Figure 3 Description:** This bar chart illustrates the total number of drug poisoning deaths from 1999 to 2016, broken down by sex (Both Sexes, Female, Male). The data highlights a steady increase in deaths over time, with males consistently having higher counts.
 
+```{r plot 4, echo=FALSE, message=FALSE, warning=FALSE}
+library(plotly)
+library(paletteer)
+deaths_by_age <- drug_mortality %>%
+  group_by(Year, `Age Group`) %>%
+  summarise(
+    Total_Deaths = sum(Deaths, na.rm = TRUE),
+    Total_Population = sum(Population, na.rm = TRUE),
+    .groups = "drop")
 
+#Removal of All Ages value to see each age range's values
+deaths_by_age_filtered <- deaths_by_age %>%
+  filter(`Age Group` != "All Ages")
+
+# Create the ggplot bar plot with deaths by Age Group and hover text
+age_vs_deaths1_plot <- ggplot(deaths_by_age_filtered, aes(
+  x = Year, y = Total_Deaths, fill = `Age Group`,
+  text = paste(
+    "Year:", Year,
+    "<br>Age Group:", `Age Group`,
+    "<br>Total Deaths:", Total_Deaths))) +
+  geom_bar(stat = "identity") +
+  labs(title = "Fig. 4: Total Count Drug Poisoning Deaths by Age Range (1999-2016)",
+       x = "Year", y = "Total Drug Poisoning Deaths") +
+  facet_wrap(~ `Age Group`) +
+  theme_minimal() +
+  scale_y_continuous(labels = scales::label_comma()) +  # Update y-axis to show whole numbers and add clarity for units
+  scale_fill_paletteer_d("MetBrewer::Cassatt1")
+
+# Convert to interactive plotly plot
+interactive_age_vs_deaths1_plot <- ggplotly(age_vs_deaths1_plot, tooltip = "text")
+
+# Display the interactive plot
+interactive_age_vs_deaths1_plot
+```
+**Figure 4 Description:** This faceted bar chart displays the total drug poisoning deaths from 1999 to 2016, segmented by age groups. Older age groups (45-54 and 55-64) show a sharp rise in deaths, while younger groups (0-14) have significantly lower numbers.
